@@ -121,7 +121,12 @@ The Solver uses SemVer and the versions are tracked automatically. There are Git
 
 ## Related Guides
 
+
+- [O'Reilly Challenges](https://www.katacoda.community/challenges/challenges.html) and a [Challenge Example](https://learning.oreilly.com/scenarios/kubernetes-skills-challenge/9781098104481/).
+
 - [Picocli](https://picocli.info/).
+
+- [Quarkus](https://quarkus.io/)
 
 - To learn more about building native executables, see [Building Quarkus Apps with Gradle](https://quarkus.io/guides/gradle-tooling).
 
