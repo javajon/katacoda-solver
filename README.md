@@ -122,7 +122,7 @@ The Solver uses SemVer and the versions are tracked automatically. There are Git
 ## Related Guides
 
 
-- [O'Reilly Challenges](https://www.katacoda.community/challenges/challenges.html) and a [Challenge Example](https://learning.oreilly.com/scenarios/kubernetes-skills-challenge/9781098104481/).
+- [O'Reilly Challenges](https://www.katacoda.community/challenges/challenges.html) and a [Challenge Examples](https://katacoda.com/scenario-examples/courses/challenges).
 
 - [Picocli](https://picocli.info/).
 
