@@ -29,24 +29,17 @@ Change the `VERSION=` setting to the latest (or desired) SemVer listed on the [r
 ```
 If you are running and testing with a live Challenge and want to test with a different or updated version of solver then install an alternate version that specifies the target.
 
-☢ Alternatively, you could add a wget/curl command and in the scenario's background script download a specific release from the [Solver's GitHub Releases](https://github.com/javajon/katacoda-solver/releases) page. However, this approach is much more slow and brittle and could cause the Challenge to not work consistently for each learner.
+☢ Please avoid attempting to download the solver binary from GitHub on the scenario launch. There are rate limits and reliability issues related to GitHub that can cause your scenario to break for learners.
 
-### Hack for quick testing by copying the binary into a scenario.
+### Rapid Development Testing
 
-**Copy to Challenge via Google Drive:**
+For fast, local, iterative development and testing of the solver tool with a live challenge its best to copy the updated solver binary directly to the challenge. There are a variety of places where a binary can be uploaded. Here is an example using the public service [transfer.sh](https://transfer.sh/):
 
 1. Build the binary with `./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true`
-2. Drop the binary `./build/solver-1.0.0-SNAPSHOT-runner` into gdrive
-3. Share link to binary as public URL.
-
----
-
-1. Start O'Reilly Challenge
-2. Run `pip install gdown`
-3. Copy the id of the shared public gdrive link (not the whole link)
-4. Run `gdown --id <g-drive link DI>`
-5. Make executable `chmod +x solver-x.x.x-SNAPSHOT-runner`
-6. Install the binary with `cp -b solver-x.x.x-SNAPSHOT-runner /usr/local/bin/solver`
+2. Upload: STORAGE_URL=$(curl --upload-file build/solver-0.1.1-SNAPSHOT-runner https://transfer.sh/solver) && echo $STORAGE_URL
+3. Start Challenge
+4. Copy solver binary into Challenge: curl -o solver https://transfer.sh/[id]]/solver
+5. Make executable, copy, and verify: chmod +x solver; cp solver /usr/local/bin; solver --version
 
 ## Architecture stack
 
@@ -117,14 +110,13 @@ You can run Solver from Linux shells, but without the context of an O'Reilly Cha
 ```
 ## Solver Version Tracking
 
-The Solver uses SemVer and the versions are tracked automatically. There are GitHub actions to build, tag, and create releases. A release is created for any commit with a new SemVer git tag. the SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump). Merge pull requests (PRs) automate the SemVer advancement along with PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps.
+The Solver uses SemVer and the versions are tracked automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump). Merge pull requests (PRs) automate the SemVer advancement along with PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps.
 
 ## Related Guides
 
-
 - [O'Reilly Challenges](https://www.katacoda.community/challenges/challenges.html) and a [Challenge Examples](https://katacoda.com/scenario-examples/courses/challenges).
 
-- [Picocli](https://picocli.info/).
+- [Picocli](https://picocli.info/)
 
 - [Quarkus](https://quarkus.io/)
 
@@ -139,3 +131,4 @@ The Solver uses SemVer and the versions are tracked automatically. There are Git
 ## Origins
 
 This project was inspired by the [try-picocli-gradle](https://github.com/ia3andy/try-picocli-gradle) repository.
+
