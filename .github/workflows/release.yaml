@@ -45,7 +45,7 @@ jobs:
           version: latest
           files: |
             build/solver-${{ github.event.client_payload.semver }}-runner
-          args: -best --lzma
+          args: --best --lzma
                 # -fq args?  https://github.com/marketplace/actions/upx-github-action
 
       - name: List the built binary
