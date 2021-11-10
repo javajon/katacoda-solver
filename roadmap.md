@@ -2,7 +2,7 @@
 
 This is a list of upcoming considerations to improve the tool:
 
-## Near term feature goals
+## Near term feature goals and issues
 
 - Add example challenge scenario using solver, add reference to readme, use as create archetype
 - `solver solution` : Solutions encrpyt/decrypt
@@ -10,6 +10,9 @@ This is a list of upcoming considerations to improve the tool:
 - `solver checklist`: Check for required files, use linters to validate json, markdown, and shell script files
 - Add more unit testing
 - verbose switch for log levels, off in release, on in development 
+- reduce solver binary image size from 35.6MB. Compression shows 11MB possible. 
+- Release notes are blank
+- place architecture target on asset file
 
 ## Longer term feature goals
 

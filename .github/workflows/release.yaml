@@ -29,30 +29,40 @@ jobs:
 
       - name: Build release changelog
         id: github_release
-        uses: mikepenz/release-changelog-builder-action@v2.5.1
+        uses: mikepenz/release-changelog-builder-action@v2.6.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          configuration: "./.github/workflows/release_changelog.json"
 
       - name: Dump Change Log
         run: echo ${{steps.github_release.outputs.changelog}}
 
       - name: Build native
-        run: ./gradlew build -PciSemVer=${{ github.event.client_payload.semver }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true
+        run: ./gradlew build -PciSemVer=${{ github.event.client_payload.semver }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11
 
-      - name: Is the binary built?
-        run: ls -a build
+      - name: Compress native with UPX
+        uses: crazy-max/ghaction-upx@v1
+        with:
+          version: latest
+          files: |
+            build/solver-${{ github.event.client_payload.semver }}-runner
+          args: -best --lzma
+                # -fq args?  https://github.com/marketplace/actions/upx-github-action
+
+      - name: List the built binary
+        run: ls -la build
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@6034af24fba4e5a8e975aaa6056554efe4c794d0
         with:
-          name: ${{ github.event.client_payload.semver }}
+          name: Release ${{ github.event.client_payload.semver }}
           tag_name: ${{ github.event.client_payload.semver }}
           body: ${{steps.github_release.outputs.changelog}}
           files: |
             LICENSE
             build/solver-*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Cleanup Gradle Cache
         # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
