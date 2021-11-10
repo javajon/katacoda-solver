@@ -110,7 +110,9 @@ You can run Solver from Linux shells, but without the context of an O'Reilly Cha
 ```
 ## Solver Version Tracking
 
-The Solver uses SemVer and the versions are tracked automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump). Merge pull requests (PRs) automate the SemVer advancement along with PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps.
+The Solver uses SemVer and the versions are tracked automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump). 
+
+A Merged pull requests (PRs) triggers the automated SemVer advancement. With this comes the PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps.
 
 ## Related Guides
 
