@@ -110,7 +110,20 @@ You can run Solver from Linux shells, but without the context of an O'Reilly Cha
 ```
 ## Solver Version Tracking
 
-The Solver uses SemVer and the versions are tracked automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump). Merge pull requests (PRs) automate the SemVer advancement along with PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps.
+The Solver uses SemVer and the versions are tracked automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump). 
+
+A Merged pull request (PRs) triggers the automated SemVer advancement and a new [release](https://github.com/javajon/katacoda-solver/releases). With this comes the PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps. Branch names can be reused, such as `update`. The workflow for the PR is roughly:
+
+```bash
+git checkout -b update
+(make changes)
+git add .
+git commit -m "(the reasons for the new release)"
+git push --set-upstream origin update
+```
+
+In GitHub merge the pull reuqest and be sure to add the label **patch release**, as described [here](https://github.com/jefflinse/pr-semver-bump#inputs).
+
 
 ## Related Guides
 
