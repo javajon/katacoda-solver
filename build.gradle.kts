@@ -21,10 +21,9 @@ dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation("io.quarkus:quarkus-picocli")
     implementation("io.quarkus:quarkus-arc")
-    implementation("org.apache.commons:commons-text:1.9")
-    implementation("commons-codec:commons-codec:1.15")
+    implementation("com.jayway.jsonpath:json-path:2.6.0")
 
-    testImplementation("io.quarkus:quarkus-junit5:2.3.0.Final")
+    testImplementation("io.quarkus:quarkus-junit5:2.4.1.Final")
 }
 
 group = "com.katacoda"

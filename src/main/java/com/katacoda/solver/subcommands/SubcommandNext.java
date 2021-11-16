@@ -1,6 +1,5 @@
 package com.katacoda.solver.subcommands;
 
-import com.katacoda.solver.models.Configuration;
 import com.katacoda.solver.models.Solutions;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;

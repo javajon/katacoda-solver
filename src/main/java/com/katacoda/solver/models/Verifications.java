@@ -1,7 +1,10 @@
 package com.katacoda.solver.models;
 
+import org.jboss.logging.Logger;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,14 +12,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jboss.logging.Logger;
-
 public class Verifications {
 
     private static final Logger LOG = Logger.getLogger(Verifications.class);
 
     private final static File SOURCER = new File(System.getProperty("java.io.tmpdir"), "verifications-sourcer.sh");
+    private static final Path LOCATION_IN_CHALLENGE = Path.of("/usr/local/bin");
     public static final String VERIFICATIONS_SCRIPT = "verifications.sh";
+
 
     public int requestTaskAdvance(int task) {
         int status = verify(task);
@@ -67,14 +70,9 @@ public class Verifications {
 
     private void advanceTask() {
         int task = Configuration.getCurrentTask();
-
         task++;
 
-        if (verifyFunctionExists(task)) {
-            Configuration.setCurrentTask(task);
-        } else {
-            Configuration.setCurrentTask(0);
-        }
+        Configuration.setCurrentTask(exist(task) ? task : 0);
     }
 
     public int verify(int task) {
@@ -87,7 +85,7 @@ public class Verifications {
         return -1;
     }
 
-    private boolean verifyFunctionExists(int task) {
+    public boolean exist(int task) {
         try {
             return 0 == executeShellFunction("function_exists", "verify_task_" + task);
         } catch (IOException e) {
@@ -120,13 +118,13 @@ public class Verifications {
     private InputStream getSource() throws FileNotFoundException {
         switch (Configuration.getEnvironment()) {
             case development:
-                return getClass().getClassLoader().getResourceAsStream(VERIFICATIONS_SCRIPT);
+                return Thread.currentThread().getContextClassLoader().getResourceAsStream(VERIFICATIONS_SCRIPT);
             case authoring:
                 return new FileInputStream(VERIFICATIONS_SCRIPT);
             case challenge:
-                return new FileInputStream(new File("/opt", VERIFICATIONS_SCRIPT));
+                return new FileInputStream(new File(LOCATION_IN_CHALLENGE.toFile(), VERIFICATIONS_SCRIPT));
         }
 
-        return new FileInputStream("");
+        return InputStream.nullInputStream();
     }
 }

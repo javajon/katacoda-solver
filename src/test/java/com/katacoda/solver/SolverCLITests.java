@@ -1,6 +1,9 @@
 package com.katacoda.solver;
 
 import com.katacoda.solver.models.Configuration;
+import com.katacoda.solver.models.CryptoUtils;
+import com.katacoda.solver.subcommands.SubcommandSolutions;
+import org.jboss.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SolverCLITests {
+
+    private static final Logger LOG = Logger.getLogger(SolverCLITests.class);
 
     private final String REG_EX_SEM_VER = "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?$";
 
@@ -45,7 +50,7 @@ class SolverCLITests {
     public void version() throws Exception {
         int exitCode = cmd.execute("--version");
         assertEquals(0, exitCode);
-        if (! sw.toString().contains("-")) {
+        if (!sw.toString().contains("-")) {
             String[] splitted = sw.toString().trim().split(" ");
             assertTrue(splitted[splitted.length - 1].matches(REG_EX_SEM_VER), "Expecting version " + REG_EX_SEM_VER + " but found " + sw.toString().trim());
         }
@@ -62,15 +67,15 @@ class SolverCLITests {
     }
 
     @Test
-    public void yatFull() throws Exception {
-        int exitCode = cmd.execute("yat");
+    public void statusFull() throws Exception {
+        int exitCode = cmd.execute("status");
         assertEquals(0, exitCode);
         assertEquals("Next task to solve is 1.", sw.toString().trim());
     }
 
     @Test
-    public void yatQuiet() throws Exception {
-        int exitCode = cmd.execute("yat", "--quiet");
+    public void statusQuiet() throws Exception {
+        int exitCode = cmd.execute("status", "--quiet");
         assertEquals(0, exitCode);
         assertEquals("1", sw.toString().trim());
     }
@@ -135,7 +140,7 @@ class SolverCLITests {
         int exitCode = cmd.execute("verify", "1");
         assertEquals(1, exitCode);
 
-        touch (tester);
+        touch(tester);
 
         exitCode = cmd.execute("verify", "1");
         assertEquals(0, exitCode);
@@ -158,6 +163,23 @@ class SolverCLITests {
         assertEquals(-1, exitCode);
         assertTrue(sw.toString().contains("No information is available for requested task 99"));
     }
+
+    @Test
+    public void solutionsEncryptDecrypt() throws Exception {
+        int exitCode = cmd.execute("sol", "-e");
+        assertEquals(-0, exitCode);
+
+        String message = sw.toString();
+        int start = message.indexOf("passcode: `") + 11;
+        String key = message.substring(start, start + 16);
+
+        exitCode = cmd.execute("solutions", "-d", key);
+        assertEquals(-0, exitCode);
+
+        new File("/tmp/solutions.sh.enc").delete();
+        new File("/tmp/solutions.sh").delete();
+    }
+
 
     private static void touch(File file) throws IOException {
         if (!file.exists()) {

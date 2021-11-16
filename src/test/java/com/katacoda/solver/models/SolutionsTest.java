@@ -10,10 +10,10 @@ class SolutionsTest {
 
     @Test
     void exists() {
-        assertTrue(new Solutions().exists(1));
-        assertTrue(new Solutions().exists(2));
-        assertFalse(new Solutions().exists(0));
-        assertFalse(new Solutions().exists(99));
+        assertTrue(new Solutions().exist(1));
+        assertTrue(new Solutions().exist(2));
+        assertFalse(new Solutions().exist(0));
+        assertFalse(new Solutions().exist(99));
     }
 
     @Test

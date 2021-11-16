@@ -15,7 +15,7 @@ public class VersionProvider implements CommandLine.IVersionProvider {
     public String[] getVersion() {
 
         Properties p = new Properties();
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("application.properties")) {
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties")) {
             p.load(is);
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);

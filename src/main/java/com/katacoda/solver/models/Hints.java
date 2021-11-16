@@ -4,6 +4,7 @@ import org.jboss.logging.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +16,8 @@ public class Hints {
 
     private static final String HINT_HEADER_PATTERN = "## Task %d, Hint %d";
     private static final String HINT_END_PATTERN = "## Task";
+    private static final Path LOCATION_IN_CHALLENGE = Path.of("/opt");
+    private static final String HINTS_MARKDOWN = "hints.md";
 
     public void enable(boolean enabled) {
         Configuration.setHintEnabled(enabled);
@@ -40,8 +43,15 @@ public class Hints {
         if (hintLines.get(0).isEmpty()) {
             hintLines.remove(0);
         }
+
         int lastLine = hintLines.size() - 1;
         if (hintLines.get(lastLine).isEmpty()) {
+            hintLines.remove(lastLine);
+        }
+
+        // Remove optional divider between sections
+        lastLine = hintLines.size() - 1;
+        if (hintLines.get(lastLine).trim().startsWith("---")) {
             hintLines.remove(lastLine);
         }
 
@@ -51,14 +61,14 @@ public class Hints {
     private InputStream getSource() throws FileNotFoundException {
         switch (Configuration.getEnvironment()) {
             case development:
-                return getClass().getClassLoader().getResourceAsStream("hints.md");
+                return getClass().getClassLoader().getResourceAsStream(HINTS_MARKDOWN);
             case authoring:
-                return new FileInputStream("hints.md");
+                return new FileInputStream(HINTS_MARKDOWN);
             case challenge:
-                return new FileInputStream("/opt/hints.md");
+                return new FileInputStream(new File(LOCATION_IN_CHALLENGE.toFile(), HINTS_MARKDOWN));
         }
 
-        return new FileInputStream("");
+        return InputStream.nullInputStream();
     }
 
     public List<String> getHints() {

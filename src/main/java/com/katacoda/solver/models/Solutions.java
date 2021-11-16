@@ -6,6 +6,7 @@ import picocli.CommandLine.Help.Ansi;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,7 +19,9 @@ public class Solutions {
     private static final Logger LOG = Logger.getLogger(Solutions.class);
 
     private final static File SOURCER = new File(System.getProperty("java.io.tmpdir"), "solutions-sourcer.sh");
-    public static final String SOLUTIONS_SCRIPT = "solutions.sh";
+    private static final Path LOCATION_IN_CHALLENGE = Path.of("/usr/local/bin");
+    private static final String SOLUTIONS_SCRIPT = "solutions.sh";
+
 
     public int executeShellFunction(String... functionAndParams) throws IOException {
 
@@ -57,7 +60,7 @@ public class Solutions {
         return SOURCER;
     }
 
-    public boolean exists(int task) {
+    public boolean exist(int task) {
         try {
             getSource();
             return solutionFunctionExists(task);
@@ -99,10 +102,10 @@ public class Solutions {
         }
 
         // Solve task
-        if (exists(task)) {
+        if (exist(task)) {
             solveFunction(task);
         } else {
-            String message = String.format("Cannot solve the task. The solutions.sh testing functions script was not found or the solve_task_%d function was not found. O'Reilly team members can run `solver solution --decrypt` to enable yhe solutions script.", task);
+            String message = String.format("Cannot solve the task. The solutions.sh testing functions script was not found or the solve_task_%d function was not found. O'Reilly team members can run `solver solution --decrypt <key>` to enable the solutions script. The key can be referenced in the source code's solutions.sh.md file.", task);
             out.println(Ansi.AUTO.string("@|bold,yellow " + message + "|@"));
             return -1;
         }
@@ -130,9 +133,12 @@ public class Solutions {
         List<String> hintsMarkdown = Collections.emptyList();
 
         try {
-            Stream<String> lines = new BufferedReader(new InputStreamReader(getSource(), StandardCharsets.UTF_8)).lines();
-            hintsMarkdown = lines.collect(Collectors.toList());
-            hintsMarkdown.replaceAll(String::trim);
+            InputStream source = getSource();
+            if (! source.equals(InputStream.nullInputStream())) {
+                Stream<String> lines = new BufferedReader(new InputStreamReader(source, StandardCharsets.UTF_8)).lines();
+                hintsMarkdown = lines.collect(Collectors.toList());
+                hintsMarkdown.replaceAll(String::trim);
+            }
         } catch (FileNotFoundException e) {
             LOG.error(e.getMessage(), e);
         }
@@ -147,14 +153,20 @@ public class Solutions {
     private InputStream getSource() throws FileNotFoundException {
         switch (Configuration.getEnvironment()) {
             case development:
-                return getClass().getClassLoader().getResourceAsStream(SOLUTIONS_SCRIPT);
+                return Thread.currentThread().getContextClassLoader().getResourceAsStream(SOLUTIONS_SCRIPT);
             case authoring:
-                return new FileInputStream(SOLUTIONS_SCRIPT);
+                File solutionsAuthoring = new File(SOLUTIONS_SCRIPT);
+                if (solutionsAuthoring.exists()) {
+                    return new FileInputStream(solutionsAuthoring);
+                }
             case challenge:
-                return new FileInputStream(new File("/opt", SOLUTIONS_SCRIPT));
+                File solutionsChallenge = new File(LOCATION_IN_CHALLENGE.toFile(), SOLUTIONS_SCRIPT);
+                if (solutionsChallenge.exists()) {
+                    return new FileInputStream(solutionsChallenge);
+                }
         }
 
-        return new FileInputStream("");
+        return InputStream.nullInputStream();
     }
 
 

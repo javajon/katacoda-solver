@@ -10,8 +10,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 
-@Command(name = "checklist", description = "Verify the required artifacts for the challenge are present and valid.")
-public class SubcommandChecklist implements Callable<Integer> {
+@Command(name = "check", commandListHeading = "Authoring", headerHeading = "XXXUsage:%n%n", description = "Determine the required artifacts for the challenge are present and correct. Checks in authoring or challenge environments.")
+public class SubcommandCheck implements Callable<Integer> {
 
     @Spec
     CommandSpec spec;

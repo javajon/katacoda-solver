@@ -18,6 +18,8 @@ The Deployment `redis` was rolled out, but you specified the wrong image contain
 
 The Deployment `redis` was rolled out, but it missing the expected label. See `kubectl label deployment --help`{{execute}}
 
+---
+
 ## Task 2, Hint 1
 
 A service with the name `redis` was not found in the default namespace. Use the `kubectl expose --help`{{execute}} command to expose the `redis` Deployment.
@@ -33,6 +35,8 @@ A service named `redis` was found, with the type `ClusterIP`, but the service po
 ## Task 2, Hint 4
 
 Redis service is connected to the `redis` application, but Redis is not yet reporting it's ready to accept traffic.
+
+---
 
 ## Task 3, Hint 1
 
@@ -50,6 +54,8 @@ The Deployment `voting` was rolled out, but you specified the wrong image contai
 
 The Deployment `voting` was rolled out, but it missing the expected label. See `kubectl label deployment --help`{{execute}}
 
+---
+
 ## Task 4, Hint 1
 
 A service with the name `voting` was not found in the default namespace. Use the `kubectl expose --help`{{execute}} command to expose the `voting` Deployment.
@@ -65,6 +71,8 @@ A service named `voting` was found, with the type `NodePort`, but the service po
 ## Task 4, Hint 4
 
 A service named `voting` was found, with the type `NodePort`, but the nodePort is not the right value. Delete the service and try again. See `kubectl expose --help`{{execute}}.
+
+---
 
 ## Task 5, Hint 1
 
@@ -98,6 +106,8 @@ The Deployment `db` was rolled out, but its missing the expected environment var
 
 The Deployment `db` was rolled out, but its missing the expected environment variable setting `POSTGRES_HOST_AUTH_METHOD=trust`. See `kubectl set env --help`{{execute}}
 
+---
+
 ## Task 6, Hint 1
 
 A service with the name `db` was not found in the default namespace. Use the `kubectl expose --help`{{execute}} command to expose the `db` Deployment.
@@ -109,6 +119,8 @@ A service named `db` was found, but the type is not `ClusterIP`. Delete the serv
 ## Task 6, Hint 3
 
 A service named `db` was found, with the type `ClusterIP`, but the service port is not the right value. Delete the service and try again. See `kubectl expose --help`{{execute}}.
+
+---
 
 ## Task 7, Hint 1
 
@@ -126,6 +138,8 @@ The Deployment `result` was rolled out, but you specified the wrong image contai
 
 The Deployment `result` was rolled out, but it missing the expected label. See `kubectl label deployment --help`{{execute}}
 
+---
+
 ## Task 8, Hint 1
 
 A service with the name `result` was not found in the default namespace. Use the `kubectl expose --help`{{execute}} command to expose the `result` Deployment.
@@ -141,6 +155,8 @@ A service named `result` was found, with the type `NodePort`, but the service po
 ## Task 8, Hint 4
 
 A service named `result` was found, with the type `NodePort`, but the nodePort is not the right value. Delete the service and try again. See `kubectl expose --help`{{execute}}.
+
+---
 
 ## Task 9, Hint 1
 

@@ -1,4 +1,4 @@
-# Solver Tool for O'Reilly Challenges
+# Solver Tool for Authoring O'Reilly Challenges
 
 Solver is a command-line interface ([CLI](https://en.wikipedia.org/wiki/Command-line_interface)) that helps authors create [O'Reilly Challenges](https://www.katacoda.community/challenges/challenges.html). The Solver utility helps authors organize the verifications, the myriad of hints, and provides an enhanced solutions mechanism for rapid testing. Solver is not required, but it can shorten your time for producing quality Challenges.
 
@@ -33,13 +33,19 @@ If you are running and testing with a live Challenge and want to test with a dif
 
 ### Rapid Development Testing
 
-For fast, local, iterative development and testing of the solver tool with a live challenge its best to copy the updated solver binary directly to the challenge. There are a variety of places where a binary can be uploaded. Here is an example using the public service [transfer.sh](https://transfer.sh/):
+For fast, local, iterative development and testing of the solver tool with a live challenge it's best to copy the updated solver binary directly to the challenge. There are a variety of places where a binary can be uploaded. Here is an example using the public service [transfer.sh](https://transfer.sh/):
 
 1. Build the binary with `./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true`
-2. Upload: STORAGE_URL=$(curl --upload-file build/solver-0.1.1-SNAPSHOT-runner https://transfer.sh/solver) && echo $STORAGE_URL
-3. Start Challenge
-4. Copy solver binary into Challenge: curl -o solver https://transfer.sh/[id]]/solver
-5. Make executable, copy, and verify: chmod +x solver; cp solver /usr/local/bin; solver --version
+2. Identify the binary to copy: `export solver=build/solver-0.1.1-SNAPSHOT-runner`
+3. Upload: `STORAGE_URL=$(curl --upload-file $solver https://transfer.sh/solver) && echo $STORAGE_URL`
+4. Copy the storage URL to your clipboard
+5. Start Challenge
+6. Copy solver binary into Challenge using the copied URL: `curl -o solver <url>`
+7. Make executable, copy, and verify: `chmod +x solver; cp solver /usr/local/bin; solver --version`
+
+To compress the binary before transfer use [UPX](https://upx.github.io/). The releases are compressed with this UPX tool:
+- Install UPX with `sudo apt-get update && yes | sudo apt-get install upx`
+- Compress the executable with: `upx --best --lzma $solver`
 
 ## Architecture stack
 
@@ -110,9 +116,9 @@ You can run Solver from Linux shells, but without the context of an O'Reilly Cha
 ```
 ## Solver Version Tracking
 
-The Solver uses SemVer and the versions are tracked automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump). 
+The Solver uses SemVer and the versions are tracked automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump).
 
-A Merged pull request (PRs) triggers the automated SemVer advancement and a new [release](https://github.com/javajon/katacoda-solver/releases). With this comes the PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps. Branch names can be reused, such as `update`. The workflow for the PR is roughly:
+A Merged pull request (PRs) triggers the automated SemVer advancement and a new [release](https://github.com/javajon/katacoda-solver/releases). With this comes the PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps. Branch names can be reused, such as `update`. The workflow for the PR is roughly follows this flow:
 
 ```bash
 git checkout -b update
@@ -122,7 +128,7 @@ git commit -m "(the reasons for the new release)"
 git push --set-upstream origin update
 ```
 
-In GitHub merge the pull reuqest and be sure to add the label **patch release**, as described [here](https://github.com/jefflinse/pr-semver-bump#inputs).
+In GitHub merge the pull request and be sure to add the label **patch release**, as described [here](https://github.com/jefflinse/pr-semver-bump#inputs).
 
 
 ## Related Guides
@@ -144,4 +150,3 @@ In GitHub merge the pull reuqest and be sure to add the label **patch release**,
 ## Origins
 
 This project was inspired by the [try-picocli-gradle](https://github.com/ia3andy/try-picocli-gradle) repository.
-
