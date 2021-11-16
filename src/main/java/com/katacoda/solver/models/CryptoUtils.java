@@ -1,57 +1,44 @@
 package com.katacoda.solver.models;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.util.Random;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 /**
- * A utility class that encrypts or decrypts a file.
+ * A utility class that encrypts or decrypts inputs into outputs..
+ *
  * @author www.codejava.net
  * https://www.codejava.net/coding/file-encryption-and-decryption-simple-example
  */
 public class CryptoUtils {
     private static final String ALGORITHM = "AES";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding"; // to work with openssl -d "aes-128-ecb"
-    // "AES";
 
-    public static void encrypt(String key, File inputFile, File outputFile)
-            throws CryptoException {
-        doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);
+    public static void encrypt(String key, InputStream input, OutputStream output) throws CryptoException {
+        doCrypto(Cipher.ENCRYPT_MODE, key, input, output);
     }
 
-    public static void decrypt(String key, File inputFile, File outputFile)
-            throws CryptoException {
-        doCrypto(Cipher.DECRYPT_MODE, key, inputFile, outputFile);
+    public static void decrypt(String key, InputStream input, OutputStream output) throws CryptoException {
+        doCrypto(Cipher.DECRYPT_MODE, key, input, output);
     }
 
-    private static void doCrypto(int cipherMode, String key, File inputFile,
-                                 File outputFile) throws CryptoException {
+    private static void doCrypto(int cipherMode, String key, InputStream input,
+                                 OutputStream output) throws CryptoException {
         Key secretKey = new SecretKeySpec(key.getBytes(), ALGORITHM);
 
         try {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(cipherMode, secretKey);
-
-            try (FileInputStream inputStream = new FileInputStream(inputFile);
-                 FileOutputStream outputStream = new FileOutputStream(outputFile)) {
-                byte[] inputBytes = new byte[(int) inputFile.length()];
-                inputStream.read(inputBytes);
-
-                byte[] outputBytes = cipher.doFinal(inputBytes);
-                outputStream.write(outputBytes);
-            }
-
+            output.write(cipher.doFinal(input.readAllBytes()));
         } catch (NoSuchPaddingException | NoSuchAlgorithmException
                 | InvalidKeyException | BadPaddingException
                 | IllegalBlockSizeException | IOException e) {
@@ -76,4 +63,3 @@ public class CryptoUtils {
         }
     }
 }
-

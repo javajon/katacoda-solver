@@ -2,11 +2,7 @@ package com.katacoda.solver;
 
 import com.katacoda.solver.subcommands.*;
 import io.quarkus.picocli.runtime.annotations.TopCommand;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @TopCommand
 @Command(name = "solver", mixinStandardHelpOptions = true,
@@ -26,26 +22,17 @@ import java.util.logging.Logger;
                 SubcommandHint.class,
                 SubcommandView.class,
                 SubcommandReset.class,
-                SubcommandYat.class,
+                SubcommandStatus.class,
 
                 // To help authors at writing time
                 SubcommandCreate.class,
-                SubcommandChecklist.class,
+                SubcommandCheck.class,
 
                 // Called from challenge framework (hidden from CLI)
-                SubcommandRequestTaskAdvance.class
+                SubcommandRequestTaskAdvance.class,
+                SubcommandRequestHint.class
         })
 
 
 public class SolverTopCommand {
-
-    // option is shared with subcommands
-    @CommandLine.Option(names = {"-l", "--verbose"}, scope = CommandLine.ScopeType.INHERIT)
-    public void setVerbose(boolean[] verbose) {
-        // Configure log4j.
-        // (This is a simplistic example: a real application may use more levels and
-        // perhaps configure only the ConsoleAppender level instead of the root log level.)
-        Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-        logger.setLevel(verbose.length > 0 ? Level.FINEST : Level.INFO);
-    }
 }

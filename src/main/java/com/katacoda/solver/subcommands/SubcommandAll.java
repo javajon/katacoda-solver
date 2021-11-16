@@ -2,13 +2,12 @@ package com.katacoda.solver.subcommands;
 
 import com.katacoda.solver.models.Configuration;
 import com.katacoda.solver.models.Solutions;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Spec;
 
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
-import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Spec;
 
 @Command(name = "all", description = "Solve all remaining tasks")
 public class SubcommandAll implements Callable<Integer> {

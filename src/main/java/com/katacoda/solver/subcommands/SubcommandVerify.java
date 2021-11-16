@@ -3,14 +3,14 @@ package com.katacoda.solver.subcommands;
 import com.katacoda.solver.models.Verifications;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Ansi;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
-import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Spec;
 
-import static picocli.CommandLine.*;
+import static picocli.CommandLine.Option;
 
 @Command(name = "verify", description = "Verify task number is complete")
 public class SubcommandVerify implements Callable<Integer> {

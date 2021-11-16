@@ -40,13 +40,13 @@ jobs:
         run: ./gradlew build -PciSemVer=${{ github.event.client_payload.semver }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11
 
       - name: Compress native with UPX
-        uses: crazy-max/ghaction-upx@v1
+        uses: crazy-max/ghaction-upx@v1.4.0
         with:
-          version: latest
+          version: v3.96
           files: |
             build/solver-${{ github.event.client_payload.semver }}-runner
           args: --best --lzma
-                # -fq args?  https://github.com/marketplace/actions/upx-github-action
+                # args: https://github.com/marketplace/actions/upx-github-action
 
       - name: List the built binary
         run: ls -la build

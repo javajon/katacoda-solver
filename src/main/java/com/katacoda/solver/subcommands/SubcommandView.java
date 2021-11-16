@@ -5,16 +5,17 @@ import com.katacoda.solver.models.Solutions;
 import com.katacoda.solver.models.Verifications;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Spec;
 
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
-import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Spec;
 
 @Command(name = "view", description = "Reveal the verifications, hints, and solutions for a task.")
 public class SubcommandView implements Callable<Integer> {
 
-    @Spec CommandSpec spec;
+    @Spec
+    CommandSpec spec;
 
     @CommandLine.Parameters(index = "0", defaultValue = "0", description = "Display hint for task.")
     private int task = 0;
@@ -30,9 +31,9 @@ public class SubcommandView implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        Solutions solutions = new Solutions();
+        Verifications verifications = new Verifications();
 
-        if (!solutions.exists(task)) {
+        if (!verifications.exist(task)) {
             out().println(CommandLine.Help.Ansi.AUTO.string("@|bold,red " + "No information is available for requested task " + task + "|@"));
             return -1;
         }
@@ -61,7 +62,11 @@ public class SubcommandView implements Callable<Integer> {
 
         if (showSolutions) {
             out().printf("%n---- Solutions for Task %d ----%n%n", task);
-            out().println(CommandLine.Help.Ansi.AUTO.string("@|bold,yellow " + getSolutions(task) + "|@"));
+            if (!new Solutions().exist(task)) {
+                out().println(CommandLine.Help.Ansi.AUTO.string("@|yellow " + "Solutions not found for requested task " + task + "|@"));
+            } else {
+                out().println(CommandLine.Help.Ansi.AUTO.string("@|bold,yellow " + getSolutions(task) + "|@"));
+            }
         }
     }
 

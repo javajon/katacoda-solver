@@ -1,8 +1,9 @@
 package com.katacoda.solver.models;
 
+import org.jboss.logging.Logger;
+
 import java.io.*;
 import java.util.Properties;
-import org.jboss.logging.Logger;
 
 /** Persist state of challenge across multiple calls to this application. */
 public class Configuration {
@@ -104,11 +105,11 @@ public class Configuration {
             return Environment.authoring;
         }
 
-        if (new File("/opt/solutions.enc").exists()) {
-            return Environment.challenge;
+        if (new File("gradlew").exists()) {
+            return Environment.development;
         }
 
-        return Environment.development;
+        return Environment.challenge;
     }
 
     public static class ConfigurationException extends Exception {
