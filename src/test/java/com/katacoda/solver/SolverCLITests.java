@@ -80,6 +80,7 @@ class SolverCLITests {
 
     @Test
     public void reset() throws Exception {
+        Configuration.setCurrentTask(2);
         int exitCode = cmd.execute("reset");
         assertEquals(0, exitCode);
         assertEquals("The current task has been set back to the first step (1).", sw.toString().trim());

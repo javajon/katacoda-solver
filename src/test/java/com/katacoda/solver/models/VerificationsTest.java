@@ -15,6 +15,7 @@ class VerificationsTest {
 
     @Test
     void requestTaskAdvance() throws IOException {
+        Configuration.setCurrentTask(1);
         assertEquals(1, new Verifications().requestTaskAdvance(Configuration.getCurrentTask()));
         File file = new File("test.txt");
         touch(file);

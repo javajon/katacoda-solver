@@ -14,11 +14,12 @@ public class SubcommandReset implements Callable<Integer> {
 
     @Override
     public Integer call() {
-
         if (Configuration.getEnvironment() == Configuration.Environment.authoring) {
             out().println("Command only valid in running challenge.");
             return -1;
         }
+
+        Configuration.setCurrentTask(1);
 
         out().printf(String.format("The current task has been set back to the first step (%d).", Configuration.getCurrentTask()));
 
