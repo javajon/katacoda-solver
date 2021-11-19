@@ -45,24 +45,26 @@ jobs:
           version: v3.96
           files: |
             build/solver-${{ github.event.client_payload.semver }}-runner
-          args: --best --lzma
-                # args: https://github.com/marketplace/actions/upx-github-action
+        # args: --lzma
+        # lzma, best, brute all give smaller size, but slow execution,
+        # no arg, default, compression still compresses albeit
+        # larger but larger with faster execution
+        # https://github.com/upx/upx/blob/8d42b12117130b944023335cc2b76072c145db4d/src/main.cpp
 
       - name: List the built binary
         run: ls -la build
 
       - name: Create Release
-        uses: softprops/action-gh-release@6034af24fba4e5a8e975aaa6056554efe4c794d0
+        uses: softprops/action-gh-release@v0.1.14
         with:
           name: Release ${{ github.event.client_payload.semver }}
           tag_name: ${{ github.event.client_payload.semver }}
-          body: ${{steps.github_release.outputs.changelog}}
+        #  body: ${{steps.github_release.outputs.changelog}}
           files: |
             LICENSE
             build/solver-*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
       - name: Cleanup Gradle Cache
         # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.

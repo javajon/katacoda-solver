@@ -1,6 +1,7 @@
 package com.katacoda.solver.subcommands;
 
 import com.katacoda.solver.models.Configuration;
+import com.katacoda.solver.models.VersionProvider;
 import org.jboss.logging.Logger;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
@@ -10,9 +11,13 @@ import picocli.CommandLine.Spec;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -48,16 +53,22 @@ public class SubcommandCreate implements Callable<Integer> {
     @Override
     public Integer call() {
 
-        if (Configuration.getEnvironment() != Configuration.Environment.authoring) {
+        if (Configuration.getEnvironment() == Configuration.Environment.challenge) {
             out("Command only valid during challenge authoring.");
             return -1;
         }
 
         Path target = Path.of(destination);
+        if (!target.toFile().exists()) {
+            target.toFile().mkdirs();
+        }
+
         if (!target.toFile().isDirectory()) {
             out(String.format("Destination path %s to create the archetype is not a directory.", target.toAbsolutePath()));
             return 1;
         }
+
+        String projectDirName = "";
 
         switch (archetype) {
 
@@ -67,10 +78,8 @@ public class SubcommandCreate implements Callable<Integer> {
                 return 1;
 
             case linux:
-                createLinux(target);
-                out(String.format("A new project %s has been created at %s", LINUX_ARCHETYPE, destination));
-                out("Copy a version of the solver tool into the " + LINUX_ARCHETYPE + "/assets directory.");
-                // TODO this will be replaced with a command to get latest from public repo release page.
+                projectDirName = createLinux(target);
+                out(String.format("A new project %s has been created at %s/%s", LINUX_ARCHETYPE, destination, projectDirName));
                 break;
 
             case kubernetes:
@@ -78,9 +87,44 @@ public class SubcommandCreate implements Callable<Integer> {
                 return 1;
         }
 
+        return syncSolverVersionReference(target, projectDirName);
+    }
+
+    /**
+     * Ensure challenge uses matching version of solver
+     * In init-background.sh set the version in SOLVER_VERSION=x.y.z
+     *
+     * @param target
+     * @param projectDirName
+     * @return
+     */
+    private int syncSolverVersionReference(Path target, String projectDirName) {
+        String versionMessage = new VersionProvider().getVersion()[0];
+        String version = versionMessage.split("\\s+")[2]; // extract version from "Solver version x.y.z"
+
+        Path scriptFile = target.resolve(projectDirName).resolve("init-background.sh");
+        try (Stream<String> lines = Files.lines(scriptFile)) {
+            List<String> replaced = lines
+                    .map(line -> swap(line, version))
+                    .collect(Collectors.toList());
+
+            Files.write(scriptFile, replaced);
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+            return -1;
+        }
+
         return 0;
     }
 
+    private static String swap(String line, String version) {
+        if (line.startsWith("SOLVER_VERSION=")) {
+            return "SOLVER_VERSION=" + version;
+        }
+        return line;
+    }
+
+    /** Bare minimum skeleton. */
     private void createScratch() {
         String challengeSrcDir = "";
         File indexJson = new File(challengeSrcDir, INDEX.toString());
@@ -96,20 +140,23 @@ public class SubcommandCreate implements Callable<Integer> {
         create(HINT);
     }
 
-    private void createLinux(Path destination) {
+    private String createLinux(Path destination) {
         try (ZipInputStream zis = new ZipInputStream(
                 Objects.requireNonNull(
                         getClass().getClassLoader().getResourceAsStream(LINUX_ARCHETYPE)))) {
-            expandContents(destination.toFile(), zis);
+            return expandContents(destination.toFile(), zis);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
+
+        return "";
     }
 
-    private void expandContents(File destDir, ZipInputStream zis) throws IOException {
+    private String expandContents(File destDir, ZipInputStream zis) throws IOException {
         byte[] buffer = new byte[1024];
 
         ZipEntry zipEntry = zis.getNextEntry();
+        String projectDirName = zipEntry == null ? "" : Path.of(zipEntry.getName()).getParent().toString();
         while (zipEntry != null) {
             File newFile = newFile(destDir, zipEntry);
             if (zipEntry.isDirectory()) {
@@ -133,6 +180,8 @@ public class SubcommandCreate implements Callable<Integer> {
             }
             zipEntry = zis.getNextEntry();
         }
+
+        return projectDirName;
     }
 
 

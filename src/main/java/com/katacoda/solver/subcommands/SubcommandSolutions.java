@@ -171,7 +171,7 @@ public class SubcommandSolutions implements Callable<Integer> {
     private Path encryptLocation() {
         switch (Configuration.getEnvironment()) {
             case development:
-                return Path.of("/tmp", SOLUTIONS_SCRIPT_ENC);
+                return Path.of(System.getProperty("java.io.tmpdir"), SOLUTIONS_SCRIPT_ENC);
             case authoring:
                 return Path.of("assets", SOLUTIONS_SCRIPT_ENC);
             case challenge:
@@ -184,7 +184,7 @@ public class SubcommandSolutions implements Callable<Integer> {
     private Path decryptLocation() {
         switch (Configuration.getEnvironment()) {
             case development:
-                return Path.of("/tmp", SOLUTIONS_SCRIPT);
+                return Path.of(System.getProperty("java.io.tmpdir"), SOLUTIONS_SCRIPT);
             case authoring:
                 return Path.of("assets", SOLUTIONS_SCRIPT);
             case challenge:
