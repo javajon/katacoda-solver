@@ -18,16 +18,20 @@ public class SubcommandStatus implements Callable<Integer> {
 
     @Override
     public Integer call() {
+        if (Configuration.getEnvironment() == Configuration.Environment.authoring) {
+            out().println("Command only valid in running challenge.");
+            return -1;
+        }
+
         int task = Configuration.getCurrentTask();
 
         if (quiet) {
             out().println(task);
         } else {
-            if (task > 0) {
-                out().printf("Next task to solve is %d.%n", task);
-
-            } else {
+            if (Configuration.isChallengeComplete()) {
                 out().println("All tasks have been verified and completed.");
+            } else {
+                out().printf("Challenge is incomplete and next task to solve is %d.%n", task);
             }
         }
 

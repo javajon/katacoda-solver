@@ -17,7 +17,6 @@ import picocli.CommandLine.Command;
                 SubcommandUntil.class,
 
                 // Secondary interactive commands
-                SubcommandSolve.class,
                 SubcommandVerify.class,
                 SubcommandHint.class,
                 SubcommandView.class,

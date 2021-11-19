@@ -1,8 +1,6 @@
 package com.katacoda.solver;
 
 import com.katacoda.solver.models.Configuration;
-import com.katacoda.solver.models.CryptoUtils;
-import com.katacoda.solver.subcommands.SubcommandSolutions;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -70,7 +68,7 @@ class SolverCLITests {
     public void statusFull() throws Exception {
         int exitCode = cmd.execute("status");
         assertEquals(0, exitCode);
-        assertEquals("Next task to solve is 1.", sw.toString().trim());
+        assertEquals("Challenge is incomplete and next task to solve is 1.", sw.toString().trim());
     }
 
     @Test
