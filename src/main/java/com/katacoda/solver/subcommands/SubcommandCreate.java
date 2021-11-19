@@ -49,7 +49,7 @@ public class SubcommandCreate implements Callable<Integer> {
     public Integer call() {
 
         if (Configuration.getEnvironment() != Configuration.Environment.authoring) {
-            out().println("Command only valid during challenge authoring.");
+            out("Command only valid during challenge authoring.");
             return -1;
         }
 
