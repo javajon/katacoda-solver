@@ -4,14 +4,14 @@ Upcoming considerations to improve the tool:
 
 ## Near term feature goals and issues
 
-- Load solver into challenges with wget from release page.
 - Update documentation page on challenges with solver
-- Release notes on public repo replace page are blank
+- Release notes on the public repo release page are blank
 - OSX and Windows native binary on release page
 - Archetype project created needs version of solver installed
 - Test command line for odd ball values, eg. solver all when solutions not decrypted.
 - Add more unit testing
 - Enhance help descriptions for each command
+- Add .cypress tests to archetypes
 
 The current commands for Solver are marked with their implementation and testing status:
 
@@ -35,8 +35,9 @@ The current commands for Solver are marked with their implementation and testing
 
 ## Longer term feature goals
 
+
+- ☢ The CLI binary (linux native) is currently above the 9MB limit for scenario asset size. The CLI binary has been compressed using UPX, but so far cannot be distilled below 9MB. For the time being it is recommended to wget the binary from the GitHub release page when the challnege starts. This can potentially lead to the challenge not working if GitHub failes to deliver the artifact due to issues such as GitHub stability, rate limiting, or pure networking.
 - Create archetype for linux works, but could create a few more. A blank/scratch archetype would be helpful.
-- Add .cypress tests to archetypes
 - Currently assuming all solutions are in a sh file, instead put all contents in solutions directory into an encrpyted zip.
 - Perhaps a verbose logging switch, currently logs in /var/log/solver.log
 - Consider optional container image on release page.

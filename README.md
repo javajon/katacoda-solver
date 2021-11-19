@@ -10,26 +10,9 @@ If you are an author using this utility, your feedback is important and please f
 
 ## Installing Solver into a Challenge
 
-The recommended way to install Solver into a Challenge is to copy a specific release binary from the solver releases list into the `assets` directory of the source for a Challenge. This way each Challenge has the solver utility installed when it starts and it's always the version that was tested with the scenario. Copy the binary into the Challenge `assets` directory:
+The solver command line tool cannot be loaded via the scenario's assets as there is a size limit at 9MB and the CLI tool is too large of an asset. Instead there is a wget command in the init-background.sh script that installs solver when the challenge starts. This incurs a slight vulnerability if GitHub failes to deliver the requested CLI binary artifact from the release page then the challange will break and the learner will have to reload the scenario. This source may change and remains on the roadmap.
 
-```sh
-VERSION=0.9.1
-TARGET=assets/solver
-wget -O $TARGET https://github.com/javajon/katacoda-solver/releases/download/$VERSION/solver-$VERSION-runner
-chmod +x $TARGET
-```
-Change the `VERSION=` setting to the latest (or desired) SemVer listed on the [releases page](https://github.com/javajon/katacoda-solver/releases). Add this copy instruction in the assets section of `index.json`:
-
-```yaml
-"assets": {
-  "host01": [
-    {"file": "solver", "target": "/usr/local/bin/", "chmod": "+x"}
-  ]
-} 
-```
-If you are running and testing with a live Challenge and want to test with a different or updated version of solver then install an alternate version that specifies the target.
-
-☢ Please avoid attempting to download the solver binary from GitHub on the scenario launch. There are rate limits and reliability issues related to GitHub that can cause your scenario to break for learners.
+Ensure the wget pulls a specific version of solver and your challenge is tested with that specific version in place.
 
 ### Rapid Development Testing
 
@@ -42,6 +25,8 @@ For fast, local, iterative development and testing of the solver tool with a liv
 5. Start Challenge
 6. Copy solver binary into Challenge using the copied URL: `curl -o solver <url>`
 7. Make executable, copy, and verify: `chmod +x solver; cp solver /usr/local/bin; solver --version`
+
+Some of these public services throttle throughput over repeated usage. You can also use [gdrive](https://github.com/prasmussen/gdrive) to download artifacts from Google drive. Never use these for the published challenges.
 
 To compress the binary before transfer use [UPX](https://upx.github.io/). The releases are compressed with this UPX tool:
 - Install UPX with `sudo apt-get update && yes | sudo apt-get install upx`
@@ -116,7 +101,7 @@ You can run Solver from Linux shells, but without the context of an O'Reilly Cha
 ```
 ## Solver Version Tracking
 
-The Solver uses SemVer and the versions are tracked automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump).
+The Solver uses SemVer and the versions are tracked and bumped automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump).
 
 A Merged pull request (PRs) triggers the automated SemVer advancement and a new [release](https://github.com/javajon/katacoda-solver/releases). With this comes the PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps. Branch names can be reused, such as `update`. The workflow for the PR is roughly follows this flow:
 
@@ -129,7 +114,6 @@ git push --set-upstream origin update
 ```
 
 In GitHub merge the pull request and be sure to add the label **patch release**, as described [here](https://github.com/jefflinse/pr-semver-bump#inputs).
-
 
 ## Related Guides
 

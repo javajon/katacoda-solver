@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
 import java.io.*;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -175,12 +176,25 @@ class SolverCLITests {
         exitCode = cmd.execute("solutions", "-d", key);
         assertEquals(-0, exitCode);
 
-        new File("/tmp/solutions.sh.enc").delete();
-        new File("/tmp/solutions.sh").delete();
+        File tmp = new File(System.getProperty("java.io.tmpdir"));
+        new File(tmp, "solutions.sh.enc").delete();
+        new File(tmp, "solutions.sh").delete();
+    }
+
+    @Test
+    public void create() throws Exception {
+        Path tmpTest = Path.of(System.getProperty("java.io.tmpdir"), "test-create");
+        int exitCode = cmd.execute("create", "--archetype=linux", "--destination=" + tmpTest.toFile());
+        assertEquals(-0, exitCode);
+
+        Path project = Path.of(tmpTest.toString(), "challenge-linux-solver");
+        assertTrue(project.toFile().exists());
+
+        tmpTest.toFile().delete();
     }
 
 
-    private static void touch(File file) throws IOException {
+        private static void touch(File file) throws IOException {
         if (!file.exists()) {
             new FileOutputStream(file).close();
         }
