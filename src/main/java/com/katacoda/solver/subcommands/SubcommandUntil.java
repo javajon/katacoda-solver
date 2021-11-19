@@ -10,7 +10,7 @@ import picocli.CommandLine.Spec;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 
-@Command(name = "until", description = "Solve all remaining tasks until reaching given task number")
+@Command(name = "until", description = "Solve all tasks from current task until reaching given task number")
 public class SubcommandUntil implements Callable<Integer> {
 
     @Spec CommandSpec spec;
@@ -20,15 +20,22 @@ public class SubcommandUntil implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        while (!Configuration.isChallengeComplete() && Configuration.getCurrentTask() < untilTask) {
-            new Solutions().solve(out());
+
+        if (Configuration.getEnvironment() == Configuration.Environment.authoring) {
+            out().println("Command only valid in running challenge.");
+            return -1;
+        }
+
+        int result = 0;
+        while (result == 0 && !Configuration.isChallengeComplete() && Configuration.getCurrentTask() < untilTask) {
+            result = new Solutions().solve(out());
         }
 
         if (!Configuration.isChallengeComplete()) {
             out().printf("Stopped at task %d.%n", Configuration.getCurrentTask());
         }
 
-        return 0;
+        return result;
     }
 
     private PrintWriter out() {

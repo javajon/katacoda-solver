@@ -1,5 +1,6 @@
 package com.katacoda.solver.subcommands;
 
+import com.katacoda.solver.models.Configuration;
 import com.katacoda.solver.models.Verifications;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Ansi;
@@ -25,6 +26,11 @@ public class SubcommandVerify implements Callable<Integer> {
 
     @Override
     public Integer call() {
+        if (Configuration.getEnvironment() == Configuration.Environment.authoring) {
+            out().println("Command only valid in running challenge.");
+            return -1;
+        }
+
         int result = new Verifications().verify(task);
 
         if (!quiet) {

@@ -16,11 +16,18 @@ public class SubcommandAll implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        while (!Configuration.isChallengeComplete()) {
-            new Solutions().solve(out());
+
+        if (Configuration.getEnvironment() == Configuration.Environment.authoring) {
+            out().println("Command only valid in running challenge.");
+            return -1;
         }
 
-        return 0;
+        int result = 0;
+        while (result == 0 && !Configuration.isChallengeComplete() ) {
+            result = new Solutions().solve(out());
+        }
+
+        return result;
     }
 
     private PrintWriter out() {

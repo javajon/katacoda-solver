@@ -47,6 +47,12 @@ public class SubcommandCreate implements Callable<Integer> {
 
     @Override
     public Integer call() {
+
+        if (Configuration.getEnvironment() != Configuration.Environment.authoring) {
+            out().println("Command only valid during challenge authoring.");
+            return -1;
+        }
+
         Path target = Path.of(destination);
         if (!target.toFile().isDirectory()) {
             out(String.format("Destination path %s to create the archetype is not a directory.", target.toAbsolutePath()));

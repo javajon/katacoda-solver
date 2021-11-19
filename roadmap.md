@@ -1,14 +1,17 @@
 # Roadmap for Solver
 
-This is a list of upcoming considerations to improve the tool:
+Upcoming considerations to improve the tool:
 
 ## Near term feature goals and issues
 
+- Load solver into challenges with wget from release page.
 - Update documentation page on challenges with solver
 - Release notes on public repo replace page are blank
-- After archetype project is created, copy latest solver release from public repo release page
-- Prevent commands from running in the wrong context
+- OSX and Windows native binary on release page
+- Archetype project created needs version of solver installed
+- Test command line for odd ball values, eg. solver all when solutions not decrypted.
 - Add more unit testing
+- Enhance help descriptions for each command
 
 The current commands for Solver are marked with their implementation and testing status:
 
@@ -18,9 +21,8 @@ The current commands for Solver are marked with their implementation and testing
 | ✔       | -V, --version        | Print version information and exit. |
 | ✔       | solutions, sol       | Install solutions for testing. Requires authoring passcode placed in challenge source repo. |
 | ✔       | next                 | Solve current task and on success advance current task number |    
-| 🤔 todo  | all                  | Solve all remaining tasks |
-| 🤔 todo  | until                | Solve all remaining tasks until reaching given task number |
-| ✔       | solve                | Solve task number. Subsequent commands assume next task |
+| ✔       | all                  | Solve all remaining tasks |
+| 🤔 todo  | until                | Solve all tasks from current task until reaching given task number |
 | ✔       | verify               | Verify task number is complete |
 | ✔       | hint                 | Peak at hint ID for the task number. Omitting # assumes current task |
 | ✔       | view                 | Reveal the verifications, hints, and solutions for a task. |
@@ -37,7 +39,8 @@ The current commands for Solver are marked with their implementation and testing
 - Add .cypress tests to archetypes
 - Currently assuming all solutions are in a sh file, instead put all contents in solutions directory into an encrpyted zip.
 - Perhaps a verbose logging switch, currently logs in /var/log/solver.log
+- Consider optional container image on release page.
 
 ## Feedback is Important
 
-Your insights as a Challenge author around the authoring process and how to improve this utility and the rest of the platform is important. When you have feedback please consider adding an issue to this project or email me directly jonathan.johnson@dijure.com. Issues outside of the solver utility and more about the platform may be submitted to support@katacoda.com.
+Your insights as a Challenge author around the authoring process and how to improve this utility and the rest of the platform is important. When you have feedback please consider adding an [issue](https://github.com/javajon/katacoda-solver/issues) to this project or email me directly jonathan.johnson@dijure.com. Issues outside of the solver utility and more about the platform may be submitted to support@katacoda.com.

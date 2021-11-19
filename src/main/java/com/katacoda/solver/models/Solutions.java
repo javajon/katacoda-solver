@@ -122,7 +122,7 @@ public class Solutions {
         out.println(Ansi.AUTO.string("@|bold,green " + "Verifications passed for task " + task + "." + "|@"));
 
         if (Configuration.isChallengeComplete()) {
-            out.println(CommandLine.Help.Ansi.AUTO.string("@|bold,green " + "All tasks have been solved and the challenge is complete" + "|@"));
+            out.println(CommandLine.Help.Ansi.AUTO.string("@|bold,green " + "All tasks have been solved and the challenge is complete." + "|@"));
         }
 
         return result;

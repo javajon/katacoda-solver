@@ -7,7 +7,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.katacoda.solver.models.Configuration;
 import com.katacoda.solver.models.CryptoUtils;
 import com.katacoda.solver.models.Hints;
-import com.katacoda.solver.models.Utils;
 import net.minidev.json.JSONArray;
 import org.jboss.logging.Logger;
 import picocli.CommandLine;
