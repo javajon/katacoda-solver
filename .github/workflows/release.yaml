@@ -10,8 +10,22 @@ jobs:
   Payload:
     runs-on: ubuntu-latest
     steps:
+      - name: Bump and Tag Version
+        id: semver_bump_data
+        uses: jefflinse/pr-semver-bump@v1.3.2
+        with:
+          mode: validate
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          major-label: major
+          minor-label: minor
+          patch-label: patch
+          require-release-notes: true
+          release-notes-prefix: "# Release notes"
+          release-notes-suffix: ''
+          with-v: false
+
       - name: Release in Progress
-        run: echo "A new release ${{ github.event.client_payload.semver }} is in progress."
+        run: echo "A new release ${{ steps.semver_bump_data.outputs.version }} is in progress."
 
   release:
     runs-on: ubuntu-latest
@@ -28,7 +42,7 @@ jobs:
         run: echo ${{steps.github_release.outputs.changelog}}
 
       - name: Bump and Tag Version
-        id: bump-tag-version
+        id: semver_bump_data
         uses: jefflinse/pr-semver-bump@v1.3.2
         with:
           mode: bump
@@ -52,14 +66,14 @@ jobs:
         run: ./gradlew build
 
       - name: Build native
-        run: ./gradlew build -PciSemVer=${{ github.event.client_payload.semver }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11
+        run: ./gradlew build -PciSemVer=${{ steps.semver_bump_data.outputs.version }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11
 
       - name: Compress native with UPX
         uses: crazy-max/ghaction-upx@v1.4.0
         with:
           version: v3.96
           files: |
-            build/solver-${{ github.event.client_payload.semver }}-runner
+            build/solver-${{ steps.semver_bump_data.outputs.version }}-runner
         # args: --lzma
         # lzma, best, brute all give smaller size, but slow execution,
         # no arg, default, compression still compresses albeit
@@ -72,8 +86,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v0.1.14
         with:
-          name: Release ${{ github.event.client_payload.semver }}
-          tag_name: ${{ github.event.client_payload.semver }}
+          name: Release ${{ steps.semver_bump_data.outputs.version }}
+          tag_name: ${{ steps.semver_bump_data.outputs.version }}
         #  body: ${{steps.github_release.outputs.changelog}}
           files: |
             LICENSE

@@ -37,17 +37,8 @@ jobs:
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock ~/.gradle/caches/modules-2/gc.properties
 
-      - name: Version Change Information
-        run: |
-          echo 'Potential version change enqueued:'
-          echo "Current: ${{ steps.validate-pr-metadata.outputs.old-version }}"
-          echo "    New: ${{ steps.validate-pr-metadata.outputs.version }}"
-
       - name: Conditional Release Trigger
         uses: peter-evans/repository-dispatch@v1
-        # Trigger used to keep release action modular
-        if: steps.bump-tag-version.outputs.version != ''
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           event-type: release-trigger
-          client-payload: '{"semver": "${{ steps.bump-tag-version.outputs.version }}"}'
