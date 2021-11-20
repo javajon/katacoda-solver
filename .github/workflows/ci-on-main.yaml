@@ -72,12 +72,15 @@ jobs:
       - name: Build native
         run: ./gradlew build -PciSemVer=${{ steps.semver_bump_data.outputs.version }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11
 
+      - name: Rename binary
+        run: mv build/solver-${{ steps.semver_bump_data.outputs.version }}-runner build/solver-${{ steps.semver_bump_data.outputs.version }}-linux
+
       - name: Compress native with UPX
         uses: crazy-max/ghaction-upx@v1.4.0
         with:
           version: v3.96
           files: |
-            build/solver-${{ steps.semver_bump_data.outputs.version }}-runner
+            build/solver-${{ steps.semver_bump_data.outputs.version }}-linux
         # args: --lzma
         # lzma, best, brute all give smaller size, but slow execution,
         # no arg, default, compression still compresses albeit
@@ -94,16 +97,13 @@ jobs:
           tag_name: ${{ steps.semver_bump_data.outputs.version }}
           #  body: ${{steps.github_release.outputs.changelog}}
           files: |
-            LICENSE
             build/solver-*
+            LICENSE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  cleanup:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Cleanup Gradle Cache
-      # Remove select Gradle cache files from GitHub Actions context
-      # to avoid potential problems with future Gradle tasks.
-      run: |
-        rm -f ~/.gradle/caches/modules-2/modules-2.lock ~/.gradle/caches/modules-2/gc.properties
+      - name: Cleanup Gradle Cache
+        # Remove select Gradle cache files from GitHub Actions context
+        # to avoid potential problems with future Gradle tasks.
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock ~/.gradle/caches/modules-2/gc.properties

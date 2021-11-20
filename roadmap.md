@@ -4,8 +4,8 @@ Upcoming considerations to improve the tool:
 
 ## Near term feature goals and issues
 
+- Merge solver into existing challenges
 - Update documentation page on challenges with solver
-- Release notes on the public repo release page are blank
 - OSX and Windows native binary on release page
 - Archetype project created needs version of solver installed
 - Test command line for odd ball values, eg. solver all when solutions not decrypted.
