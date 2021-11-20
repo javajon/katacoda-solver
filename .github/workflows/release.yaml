@@ -1,15 +1,6 @@
-name: Release
+name: Create Release
 
-# Perform release when a SemVer tag is bumped
-
-#on:
-#  push:
-#    tags:
-#      - '[0-9]+\.[0-9]+\.[0-9]+'
-# One might be inclined to think that another release workflow could pick up on
-# on.push.tags.'[0-9]+\.[0-9]+\.[0-9]+' but the event lacks 'startsWith(github.ref, 'refs/tags/')'
-# However, all the information for kicking a release after above potential semver bump is here. Thanks @Michionlion
-# Instead, this release workflow is triggered using action peter-evans/repository-dispatch
+# Create release when triggered
 
 on:
   repository_dispatch:
@@ -19,8 +10,8 @@ jobs:
   Payload:
     runs-on: ubuntu-latest
     steps:
-      - name: Pre-announce release test
-        run: echo New SemVer is ${{ github.event.client_payload.semver }}
+      - name: Release in Progress
+        run: echo "A new release ${{ github.event.client_payload.semver }} is in progress."
 
   release:
     runs-on: ubuntu-latest
@@ -35,6 +26,30 @@ jobs:
 
       - name: Dump Change Log
         run: echo ${{steps.github_release.outputs.changelog}}
+
+      - name: Bump and Tag Version
+        id: bump-tag-version
+        uses: jefflinse/pr-semver-bump@v1.3.2
+        with:
+          mode: bump
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          major-label: major
+          minor-label: minor
+          patch-label: patch
+          require-release-notes: true
+          release-notes-prefix: "# Release notes"
+          release-notes-suffix: ''
+          with-v: false
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'adopt'
+          cache: gradle
+
+      - name: Build
+        run: ./gradlew build
 
       - name: Build native
         run: ./gradlew build -PciSemVer=${{ github.event.client_payload.semver }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11
@@ -51,7 +66,7 @@ jobs:
         # larger but larger with faster execution
         # https://github.com/upx/upx/blob/8d42b12117130b944023335cc2b76072c145db4d/src/main.cpp
 
-      - name: List the built binary
+      - name: List the built binaries
         run: ls -la build
 
       - name: Create Release
@@ -67,8 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cleanup Gradle Cache
-        # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
-        # Restoring these files from a GitHub Actions cache might cause problems for future builds.
+        # Remove select Gradle cache files from GitHub Actions context
+        # to avoid potential problems with future Gradle tasks.
         run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock
-          rm -f ~/.gradle/caches/modules-2/gc.properties
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock ~/.gradle/caches/modules-2/gc.properties
