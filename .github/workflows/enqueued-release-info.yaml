@@ -20,6 +20,7 @@ jobs:
 
       - uses: jefflinse/pr-semver-bump@v1.3.2
         name: Validate Pull Request Metadata
+        id: semver_bump_data
         with:
           mode: validate
           repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -34,5 +35,5 @@ jobs:
       - name: Version Change Information
         run: |
           echo 'Potential version change enqueued:'
-          echo "Current: ${{ steps.validate-pr-metadata.outputs.old-version }}"
-          echo "    New: ${{ steps.validate-pr-metadata.outputs.version }}"
+          echo "Current: ${{ steps.semver_bump_data.outputs.old-version }}"
+          echo "    New: ${{ steps.semver_bump_data.outputs.version }}"
