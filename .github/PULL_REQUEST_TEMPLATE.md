@@ -3,3 +3,4 @@ Summary
 
 Changes
 (List the distinct changes made in this PR)
+(Be sure to label branch with `major`, `minor`, or `patch` labels!)
