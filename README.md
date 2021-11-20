@@ -103,7 +103,7 @@ You can run Solver from Linux shells, but without the context of an O'Reilly Cha
 
 The Solver uses SemVer and the versions are tracked and bumped automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump).
 
-A Merged pull request (PRs) triggers the automated SemVer advancement and a new [release](https://github.com/javajon/katacoda-solver/releases). With this comes the PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps. Branch names can be reused, such as `update`. The workflow for the PR is roughly follows this flow:
+Direct commits are not permitted to the main branch via a GitHub branch rule. Only PRs are commited to main. A Merged pull request (PR) triggers the automated SemVer advancement and a new [release](https://github.com/javajon/katacoda-solver/releases). With this comes the PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a PR is merged to `main`, it **must** be labeled with either `major`, `minor`, or `patch`. When a new SemVer tag is created a new GitHub release is created with the updated Solver binary. This technique follows some best practices for automated GitOps. Branch names can be reused, such as `update`. The workflow for the PR is roughly follows this flow:
 
 ```bash
 git checkout -b update
