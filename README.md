@@ -1,6 +1,6 @@
 # Solver Tool for Authoring O'Reilly Challenges
 
-Solver is a command-line interface ([CLI](https://en.wikipedia.org/wiki/Command-line_interface)) that helps authors create [O'Reilly Challenges](https://www.katacoda.community/challenges/challenges.html). The Solver utility helps authors organize the verifications, the myriad of hints, and provides an enhanced solutions mechanism for rapid testing. Solver is not required, but it can shorten your time for producing quality Challenges.
+`Solver` is a command-line interface ([CLI](https://en.wikipedia.org/wiki/Command-line_interface)) that helps authors create [O'Reilly Challenges](https://www.katacoda.community/challenges/challenges.html). The Solver utility helps authors organize the verifications, the myriad of hints, and provides an enhanced solutions mechanism for rapid testing. Solver is not required, but it can shorten your time for producing quality Challenges.
 
 The usage of the Solver utility for O'Reilly Challenge authors is detailed in the [Katacoda Documentation](https://www.katacoda.community/challenges/challenges-solver.html).
 

@@ -3,6 +3,7 @@ package com.katacoda.solver.subcommands;
 import com.katacoda.solver.models.Configuration;
 import com.katacoda.solver.models.VersionProvider;
 import org.jboss.logging.Logger;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
@@ -39,12 +40,12 @@ public class SubcommandCreate implements Callable<Integer> {
     private static final File VERIFICATIONS = new File("assets/verifications.sh");
     private static final File SOLUTIONS = new File("assets/solutions.sh");
 
-    private enum Archetypes {scratch, linux, kubernetes}
+    private enum Archetypes {basic, linux, kubernetes}
 
-    @Option(names = {"-a", "--archetype"}, required = true, description = "The general type of challenge to create.")
+    @Option(names = {"-a", "--archetype"}, required = true, defaultValue = "linux", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, description = "The type of challenge to create.")
     private Archetypes archetype = Archetypes.kubernetes;
 
-    @Option(names = {"-d", "--destination"}, description = "Path to destination where a new directory of the archetype will be created.")
+    @Option(names = {"-d", "--destination"}, description = "Path to destination where a new directory of the archetype will be created. Path directories are created if not present.")
     private String destination = ".";
 
     @Option(names = {"-f", "--force"}, required = false, description = "Force overwrite of existing files with confirmation.", defaultValue = "false")
@@ -55,36 +56,41 @@ public class SubcommandCreate implements Callable<Integer> {
 
         if (Configuration.getEnvironment() == Configuration.Environment.challenge) {
             out("Command only valid during challenge authoring.");
-            return -1;
+            return 1;
         }
 
         Path target = Path.of(destination);
         if (!target.toFile().exists()) {
             target.toFile().mkdirs();
+        } else if (!force) {
+            if (Objects.requireNonNull(target.toFile().listFiles()).length > 0) {
+                out(String.format("The archetype was not created because the destination %s exists with files in it. The destination remains untouched. Use --force to override.", target.toString()));
+                return 2;
+            }
         }
 
         if (!target.toFile().isDirectory()) {
             out(String.format("Destination path %s to create the archetype is not a directory.", target.toAbsolutePath()));
-            return 1;
+            return 3;
         }
 
         String projectDirName = "";
 
         switch (archetype) {
 
-            case scratch:
-                out("Archetype is not functional yet. See roadmap.");
+            case basic:
+                out("Archetype `basic` is not functional yet. See roadmap.");
                 // createScratch();
-                return 1;
+                return 4;
 
             case linux:
                 projectDirName = createLinux(target);
-                out(String.format("A new project %s has been created at %s/%s", LINUX_ARCHETYPE, destination, projectDirName));
+                out(String.format("A new %s archetype project has been created at %s/%s", archetype, destination, projectDirName));
                 break;
 
             case kubernetes:
-                out("Archetype is not functional yet. See roadmap.");
-                return 1;
+                out("Archetype `kubernetes` is not functional yet. See roadmap.");
+                return 5;
         }
 
         return syncSolverVersionReference(target, projectDirName);
@@ -124,7 +130,9 @@ public class SubcommandCreate implements Callable<Integer> {
         return line;
     }
 
-    /** Bare minimum skeleton. */
+    /**
+     * Bare minimum skeleton.
+     */
     private void createScratch() {
         String challengeSrcDir = "";
         File indexJson = new File(challengeSrcDir, INDEX.toString());

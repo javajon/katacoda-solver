@@ -1,8 +1,6 @@
-## Summary
+(Include here a one-line summary of what this PR accomplishes.)
 
-(Include here a one-line summary of what this PR accomplishes)
-
-## Changes
+### Changes
 
 - (List changes made in this PR)
 - (List changes made in this PR)

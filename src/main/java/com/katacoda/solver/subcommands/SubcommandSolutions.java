@@ -104,16 +104,11 @@ public class SubcommandSolutions implements Callable<Integer> {
 
     private int decrypt(String key) throws SolutionsException {
 
-//        try {
-//            Files.createDirectories(decryptLocation().getParent());
-//        } catch (IOException e) {
-//            throw new SolutionsException("Could not decrypt solutions because: " + e.getMessage(), e);
-//        }
-
         try (InputStream input = decryptSource(); OutputStream output = decryptTarget()) {
             CryptoUtils.decrypt(key, input, output);
         } catch (CryptoUtils.CryptoException e) {
             out(CommandLine.Help.Ansi.AUTO.string("@|bold,red " + "Invalid decryption key: " + key + "|@"));
+            out(CommandLine.Help.Ansi.AUTO.string("@|bold,red " + "For authors and testers, be sure to use the key found in the Challenge source in `assets/solutions.sh.md." + "|@"));
             LOG.debug(e.getMessage(), e);
             return 1;
         } catch (IOException e) {

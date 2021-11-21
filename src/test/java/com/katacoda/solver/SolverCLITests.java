@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -183,18 +184,53 @@ class SolverCLITests {
 
     @Test
     public void create() throws Exception {
+
         Path tmpTest = Path.of(System.getProperty("java.io.tmpdir"), "test-create");
+
+        // Clean output target
+        if (tmpTest.toFile().exists()) {
+            boolean deleteSuccess = removeAll(tmpTest.toFile());
+            assertTrue(deleteSuccess);
+        }
+
+        // Create new
         int exitCode = cmd.execute("create", "--archetype=linux", "--destination=" + tmpTest.toFile());
-        assertEquals(-0, exitCode);
+        assertEquals(0, exitCode);
+
+        // Type to create without force
+        exitCode = cmd.execute("create", "--archetype=linux", "--destination=" + tmpTest.toFile());
+        assertEquals(2, exitCode);
+
+        exitCode = cmd.execute("create", "--archetype=linux", "--destination=" + tmpTest.toFile(), "--force");
+        assertEquals(0, exitCode);
 
         Path project = Path.of(tmpTest.toString(), "challenge-linux-solver");
         assertTrue(project.toFile().exists());
 
-        tmpTest.toFile().delete();
+        tmpTest.toFile().deleteOnExit();
     }
 
+    private boolean removeAll(File file) {
+        // Safety first
+        if (!file.getAbsolutePath().startsWith(System.getProperty("java.io.tmpdir"))) {
+            return false;
+        }
 
-        private static void touch(File file) throws IOException {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File subFile : contents) {
+                if (!Files.isSymbolicLink(subFile.toPath())) {
+                    if (!removeAll(subFile)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return file.delete();
+    }
+
+    private static void touch(File file) throws IOException {
         if (!file.exists()) {
             new FileOutputStream(file).close();
         }
