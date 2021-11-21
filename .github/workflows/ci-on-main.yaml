@@ -98,9 +98,22 @@ jobs:
           #  body: ${{steps.github_release.outputs.changelog}}
           files: |
             build/solver-*
-            LICENSE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Container Image
+        run: |
+          IMAGE=ghcr.io/javajon/solver:${{ steps.semver_bump_data.outputs.version }}
+          docker build src/main/docker/Dockerfile.native-distroless --tag $IMAGE
+          docker run $IMAGE
+          docker push $IMAGE
 
       - name: Cleanup Gradle Cache
         # Remove select Gradle cache files from GitHub Actions context
