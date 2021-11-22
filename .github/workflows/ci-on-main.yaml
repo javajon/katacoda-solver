@@ -72,15 +72,16 @@ jobs:
       - name: Build native
         run: ./gradlew build -PciSemVer=${{ steps.semver_bump_data.outputs.version }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11
 
-      - name: Rename binary
-        run: mv build/solver-${{ steps.semver_bump_data.outputs.version }}-runner build/solver-${{ steps.semver_bump_data.outputs.version }}-linux
+#      - name: Rename binary
+#        run: mv build/solver-${{ steps.semver_bump_data.outputs.version }}-runner build/solver-${{ steps.semver_bump_data.outputs.version }}-linux
 
       - name: Compress native with UPX
         uses: crazy-max/ghaction-upx@v1.4.0
         with:
           version: v3.96
           files: |
-            build/solver-${{ steps.semver_bump_data.outputs.version }}-linux
+            build/solver-${{ steps.semver_bump_data.outputs.version }}-runner
+#            build/solver-${{ steps.semver_bump_data.outputs.version }}-linux
         # args: --lzma
         # lzma, best, brute all give smaller size, but slow execution,
         # no arg, default, compression still compresses albeit

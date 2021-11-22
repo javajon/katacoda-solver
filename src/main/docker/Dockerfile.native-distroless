@@ -15,7 +15,7 @@
 #
 ###
 FROM quay.io/quarkus/quarkus-distroless-image:1.0
-COPY build/*-linux /application
+COPY build/*-runner /application
 
 USER nonroot
 
