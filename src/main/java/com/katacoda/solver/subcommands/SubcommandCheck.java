@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 
-@Command(name = "check", commandListHeading = "Authoring", headerHeading = "XXXUsage:%n%n", description = "Determine the required artifacts for the challenge are present and correct. Checks in authoring or challenge environments.")
+@Command(name = "check", commandListHeading = "Authoring", headerHeading = "XXXUsage:%n%n", description = "Determine required artifacts for challenge are present and correct in either authoring or challenge contexts.")
 public class SubcommandCheck implements Callable<Integer> {
 
     @Spec
@@ -43,7 +43,7 @@ public class SubcommandCheck implements Callable<Integer> {
 
         out().println(Status.Warning.getStatus("Checklist details are evolving. See roadmap."));
 
-        switch (Configuration.getEnvironment()) {
+        switch (Configuration.getContextType()) {
             case development:
                 out().println(Status.Warning.getStatus("Checklist is not for the solver development environment."));
                 break;

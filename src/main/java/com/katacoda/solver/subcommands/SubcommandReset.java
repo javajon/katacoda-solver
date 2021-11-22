@@ -8,13 +8,13 @@ import picocli.CommandLine.Spec;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 
-@Command(name = "reset", description = "Clear task tracker so next task is assumed to be 1")
+@Command(name = "reset", description = "Clear task tracker so next task is returned back to 1.")
 public class SubcommandReset implements Callable<Integer> {
     @Spec CommandSpec spec;
 
     @Override
     public Integer call() {
-        if (Configuration.getEnvironment() == Configuration.Environment.authoring) {
+        if (Configuration.getContextType() == Configuration.ContextType.authoring) {
             out().println("Command only valid in running challenge.");
             return -1;
         }

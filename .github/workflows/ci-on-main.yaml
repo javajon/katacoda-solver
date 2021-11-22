@@ -111,7 +111,7 @@ jobs:
       - name: Build Container Image
         run: |
           IMAGE=ghcr.io/javajon/solver:${{ steps.semver_bump_data.outputs.version }}
-          docker build src/main/docker/Dockerfile.native-distroless --tag $IMAGE
+          docker build -f src/main/docker/Dockerfile.native-distroless --tag $IMAGE .
           docker run $IMAGE
           docker push $IMAGE
 

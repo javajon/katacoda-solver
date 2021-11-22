@@ -23,5 +23,7 @@ COPY --chown=1001:root build/*-runner /work/application
 
 USER 1001
 
+ENV SOLVER_CONTEXT=challenge
+
 ENTRYPOINT ["./application"]
 CMD ["--help"]

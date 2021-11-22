@@ -50,7 +50,7 @@ public class Verifications {
 
     private File getFunctionSourcingScript() {
 
-        if (!SOURCER.exists() || Configuration.getEnvironment() == Configuration.Environment.development) {
+        if (!SOURCER.exists() || Configuration.getContextType() == Configuration.ContextType.development) {
             try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(SOURCER)))) {
                 writer.println("#!/bin/bash");
                 writer.println("# Inserted functions");
@@ -116,7 +116,7 @@ public class Verifications {
 
     
     private InputStream getSource() throws FileNotFoundException {
-        switch (Configuration.getEnvironment()) {
+        switch (Configuration.getContextType()) {
             case development:
                 return Thread.currentThread().getContextClassLoader().getResourceAsStream(VERIFICATIONS_SCRIPT);
             case authoring:

@@ -59,7 +59,7 @@ public class Hints {
     }
 
     private InputStream getSource() throws FileNotFoundException {
-        switch (Configuration.getEnvironment()) {
+        switch (Configuration.getContextType()) {
             case development:
                 return getClass().getClassLoader().getResourceAsStream(HINTS_MARKDOWN);
             case authoring:

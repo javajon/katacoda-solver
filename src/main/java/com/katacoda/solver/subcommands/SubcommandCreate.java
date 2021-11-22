@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-@Command(name = "create", commandListHeading = "Authoring", description = "Create any missing files that are needed by Solver. Will not overwrite. Creates only when in authoring environment.")
+@Command(name = "create", commandListHeading = "Authoring", description = "Create a Challenge project from the given archetype when in authoring context")
 public class SubcommandCreate implements Callable<Integer> {
 
     private static final Logger LOG = Logger.getLogger(Configuration.class);
@@ -54,7 +54,7 @@ public class SubcommandCreate implements Callable<Integer> {
     @Override
     public Integer call() {
 
-        if (Configuration.getEnvironment() == Configuration.Environment.challenge) {
+        if (Configuration.getContextType() == Configuration.ContextType.challenge) {
             out("Command only valid during challenge authoring.");
             return 1;
         }

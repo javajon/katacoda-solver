@@ -9,14 +9,14 @@ import picocli.CommandLine.Spec;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 
-@Command(name = "next", description = "Solve current task and on success advance current task number")
+@Command(name = "next", description = "Solve current task and on success advance current task number.")
 public class SubcommandNext implements Callable<Integer> {
     @Spec CommandSpec spec;
 
     @Override
     public Integer call() {
 
-        if (Configuration.getEnvironment() == Configuration.Environment.authoring) {
+        if (Configuration.getContextType() == Configuration.ContextType.authoring) {
             out().println("Command only valid in running challenge.");
             return -1;
         }

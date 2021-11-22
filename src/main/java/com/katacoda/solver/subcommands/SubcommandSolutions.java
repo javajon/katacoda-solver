@@ -82,7 +82,7 @@ public class SubcommandSolutions implements Callable<Integer> {
         LOG.info("encrypt: " + exclusive.encrypt + ", decrypt key: " + exclusive.key);
 
         if (exclusive.encrypt) {
-            if (Configuration.getEnvironment() == Configuration.Environment.challenge) {
+            if (Configuration.getContextType() == Configuration.ContextType.challenge) {
                 throw new SolutionsException("The solutions.sh file cannot be encrypted within a running challenge.");
             }
             encrypt();
@@ -164,7 +164,7 @@ public class SubcommandSolutions implements Callable<Integer> {
     }
 
     private Path encryptLocation() {
-        switch (Configuration.getEnvironment()) {
+        switch (Configuration.getContextType()) {
             case development:
                 return Path.of(System.getProperty("java.io.tmpdir"), SOLUTIONS_SCRIPT_ENC);
             case authoring:
@@ -177,7 +177,7 @@ public class SubcommandSolutions implements Callable<Integer> {
     }
 
     private Path decryptLocation() {
-        switch (Configuration.getEnvironment()) {
+        switch (Configuration.getContextType()) {
             case development:
                 return Path.of(System.getProperty("java.io.tmpdir"), SOLUTIONS_SCRIPT);
             case authoring:
@@ -190,7 +190,7 @@ public class SubcommandSolutions implements Callable<Integer> {
     }
 
     private InputStream encryptSource() throws SolutionsException {
-        if (Configuration.getEnvironment() == Configuration.Environment.development) {
+        if (Configuration.getContextType() == Configuration.ContextType.development) {
             return getClass().getClassLoader().getResourceAsStream(SOLUTIONS_SCRIPT);
         }
 
@@ -227,7 +227,7 @@ public class SubcommandSolutions implements Callable<Integer> {
     }
 
     private InputStream getIndex() throws SolutionsException {
-        switch (Configuration.getEnvironment()) {
+        switch (Configuration.getContextType()) {
             case development:
                 return getClass().getClassLoader().getResourceAsStream(INDEX_NAME);
             case authoring:
