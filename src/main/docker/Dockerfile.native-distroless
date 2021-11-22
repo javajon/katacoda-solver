@@ -19,5 +19,7 @@ COPY build/*-runner /application
 
 USER nonroot
 
+ENV SOLVER_CONTEXT=challenge
+
 ENTRYPOINT ["./application"]
 CMD ["--help"]

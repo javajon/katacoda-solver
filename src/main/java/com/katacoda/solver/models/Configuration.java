@@ -95,22 +95,31 @@ public class Configuration {
         return task <= 0;
     }
 
-    public enum Environment {
+    public enum ContextType {
         development,
         authoring,
         challenge
     }
 
-    public static Environment getEnvironment() {
+    public static ContextType getContextType() {
         if (Path.of("/usr", "local", "bin", "challenge.sh").toFile().exists()) {
-            return Environment.challenge;
+            return ContextType.challenge;
         }
 
-        if (new File("gradlew").exists()) {
-            return Environment.development;
+        if (new File("index.json").exists()) {
+            return ContextType.authoring;
         }
 
-        return Environment.authoring;
+        ContextType context = ContextType.development;
+
+        String contextValue = System.getProperty("SOLVER_CONTEXT", context.name());
+        try {
+            context = ContextType.valueOf(contextValue.toLowerCase().trim());
+        } catch(IllegalArgumentException e) {
+            LOG.error("Ignoring invalid SOLVER_CONTEXT value of " + contextValue + " using context " + context.name(), e);
+        }
+
+        return context;
     }
 
     public static class ConfigurationException extends Exception {

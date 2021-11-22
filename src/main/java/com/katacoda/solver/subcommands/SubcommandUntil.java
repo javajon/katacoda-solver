@@ -21,7 +21,7 @@ public class SubcommandUntil implements Callable<Integer> {
     @Override
     public Integer call() {
 
-        if (Configuration.getEnvironment() == Configuration.Environment.authoring) {
+        if (Configuration.getContextType() == Configuration.ContextType.authoring) {
             out().println("Command only valid in running challenge.");
             return -1;
         }

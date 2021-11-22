@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
 
 import static picocli.CommandLine.Option;
 
-@Command(name = "verify", description = "Verify task number is complete")
+@Command(name = "verify", description = "Verify task number is complete.")
 public class SubcommandVerify implements Callable<Integer> {
 
     @Spec CommandSpec spec;
@@ -26,7 +26,7 @@ public class SubcommandVerify implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        if (Configuration.getEnvironment() == Configuration.Environment.authoring) {
+        if (Configuration.getContextType() == Configuration.ContextType.authoring) {
             out().println("Command only valid in running challenge.");
             return -1;
         }

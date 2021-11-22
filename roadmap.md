@@ -4,13 +4,12 @@ Upcoming considerations to improve the tool:
 
 ## Near term feature goals and issues
 
-- Container image for solver
-- More archetypes for `solver create`, currently just Linux, but `basic` should be next.
-- OSX and Windows native binary on the release page
+- More archetypes for `solver create`, currently just `linux`, `basic` may be next.
 - Test command line for oddball values, eg. solver all when solutions not decrypted.
 - Enhance help descriptions for each command
 - Add more unit testing
 - Add .cypress tests to archetypes
+- OSX and Windows native binary on the release page
 
 The current commands for Solver are marked with their implementation and testing status:
 
@@ -18,18 +17,18 @@ The current commands for Solver are marked with their implementation and testing
 |---------|-----------------------|-------------|
 | ✔       | -h, --help           | Show this help message and exit. |
 | ✔       | -V, --version        | Print version information and exit. |
-| ✔       | solutions, sol       | Install solutions for testing. Requires authoring passcode placed in challenge source repo. |
+| ✔       | solutions, sol       | Install solutions for testing. Requires authoring passcode. |
 | ✔       | next                 | Solve current task and on success advance current task number |    
 | ✔       | all                  | Solve all remaining tasks |
 | ✔       | until                | Solve all tasks from current task until reaching given task number |
 | ✔       | verify               | Verify task number is complete |
-| ✔       | hint                 | Peak at hint ID for the task number. Omitting # assumes current task |
-| ✔       | view                 | Reveal the verifications, hints, and solutions for a task. |
+| ✔       | hint                 | Get hint give a task number and hint number |
+| ✔       | view                 | Reveal the verifications, hints, and solutions for a task |
 | ✔       | reset                | Clear task tracker so next task is assumed to be 1 |
-| ✔       | status               | Get the current step and hint. |
-| ✔       | request_hint         | internal call |
-| ✔       | request_advance_task | internal call |
-| ✔       | create               | Create any missing files that are needed by Solver. Will not overwrite. Must be authoring. |
+| ✔       | status               | Get the next task to solve |
+| ✔       | request_hint         | internal call by hint.sh only |
+| ✔       | request_advance_task | internal call by verify.sh only |
+| ✔       | create               | Create a Challenge project from the given archetype when in authoring context |
 | 🤔 todo  | check                | Verify the required artifacts for the challenge are present and valid. Can check authoring and Challenge environments. |
 
 ## Longer-term feature goals

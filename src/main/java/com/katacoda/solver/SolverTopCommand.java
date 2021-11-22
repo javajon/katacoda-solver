@@ -7,8 +7,8 @@ import picocli.CommandLine.Command;
 @TopCommand
 @Command(name = "solver", mixinStandardHelpOptions = true,
         versionProvider = com.katacoda.solver.models.VersionProvider.class,
-        description = "Solves each task in the challenge given the provided functions for the task solutions and verifications.\n",
-        footer = "\nNormally, tasks are solved sequentially using 'next'. However, some tasks can be skipped if a task is optional. Before publication, the 'all' command should solve all tasks without error.",
+        description = "An authoring tool and utility for the O'Reilly Challenges framework. Verify tasks, provide hints, and solves tasks in the Challenge. Works with the provided hints.md, verifications.sh, and solutions.sh as the supporting sources.\n",
+        footer = "\nOnce solutions have been decripted command such as next, all, and until will solve the challenge. Before publication, the 'all' command must solve all tasks without error.",
         subcommands = {
                 // Primary interactive commands
                 SubcommandSolutions.class,
@@ -31,7 +31,6 @@ import picocli.CommandLine.Command;
                 SubcommandRequestTaskAdvance.class,
                 SubcommandRequestHint.class
         })
-
 
 public class SolverTopCommand {
 }
