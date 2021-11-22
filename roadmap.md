@@ -5,13 +5,13 @@ Upcoming considerations to improve the tool:
 ## Near term feature goals and issues
 
 - More archetypes for `solver create`, currently just `linux`, `basic` may be next.
-- Test command line for oddball values, eg. solver all when solutions not decrypted.
+- Test command line for oddball values
 - Enhance help descriptions for each command
 - Add more unit testing
 - Add .cypress tests to archetypes
 - OSX and Windows native binary on the release page
 
-The current commands for Solver are marked with their implementation and testing status:
+The current commands for _Solver_ are marked with their implementation and testing status:
 
 | Working | Command/Switch        | Description |
 |---------|-----------------------|-------------|
@@ -41,4 +41,4 @@ The current commands for Solver are marked with their implementation and testing
 
 ## Feedback is Important
 
-Your insights as a Challenge author around the authoring process and how to improve this utility and the rest of the platform are important. When you have feedback please consider adding an [issue](https://github.com/javajon/katacoda-solver/issues) to this project. Issues beyond the scope of authoring challenges with _solver_ and more about Katacoda may be emailed to support@katacoda.com.
+Your insights as a Challenge author around the authoring process and how to improve this utility and the rest of the platform are important. When you have feedback please consider adding an [issue](https://github.com/javajon/katacoda-solver/issues) to this project. Issues beyond the scope of authoring challenges with _Solver_ and more about Katacoda may be emailed to support@katacoda.com.
