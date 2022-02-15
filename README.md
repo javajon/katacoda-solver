@@ -6,31 +6,37 @@ The usage of _Solver_ for O'Reilly Challenge authors is detailed in the [Katacod
 
 The command line offers information on the commands via `solver --help`.
 
-If you are an author using this utility, your feedback is important and please feel free to add issues in this project for reporting problems or suggesting ideas.
+If you are an author using this utility, your feedback is important, and please feel free to add issues in this project for reporting problems or suggesting ideas.
 
-## Installing Solver into a Challenge
+## Running Solver for Authors
 
-The `solver` command-line tool cannot be loaded via the scenario's assets as there is a size limit at 9MB and the CLI tool is too large of an asset. Instead, there is a `wget` command in the `init-background.sh` script that installs _Solver_ when the challenge starts. This incurs a slight vulnerability if GitHub fails to deliver the requested CLI binary artifact from the release page then the challenge will break and the learner will have to reload the scenario. This source may change and remains on the roadmap.
+As an author there are two places where Solver can help you:
 
-Ensure the `wget` pulls a specific version of _Solver_ and your challenge is tested with that specific version in place.
+1) Locally in your development environment when creating the content
+2) At runtime, within the scenario.
 
-### Rapid Development Testing
+Solver is a tool that both supports your challenge development and execution.
 
-For fast, local, iterative development and testing of the _Solver_ tool with a live challenge it's best to copy the updated _Solver_ binary directly to the challenge. There are a variety of places where a binary can be uploaded. Here is an example using the public service [transfer.sh](https://transfer.sh/)
+These two installations types are covered in the documentation at [Challenges Solver Utility](https://www.katacoda.community/challenges/challenges-solver.html).
 
-1. Build the binary with `./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true`
-2. Identify the binary to copy: `export solver=build/solver-0.1.1-SNAPSHOT-runner`
-3. Upload: `STORAGE_URL=$(curl --upload-file $solver https://transfer.sh/solver) && echo $STORAGE_URL`
-4. Copy the storage URL to your clipboard
-5. Start Challenge
-6. Copy `solver` binary into Challenge using the copied URL: `curl -o solver <url>`
-7. Make executable, copy, and verify: `chmod +x solver; cp solver /usr/local/bin; solver --version`
+The solver CLI utility is targeted for Linux. To use Solver while you are developing your challenge on a Windows or Mac machine one option is to run the utility from the published container for solver. Here is a bash function that you can apply if you decide to use a bash terminal on Windows or Mac:
 
-Some of these public services throttle throughput over repeated usage. You can also use [gdrive](https://github.com/prasmussen/gdrive) to download artifacts from Google drive. Never use these for the published challenges.
+```bash
+function solver() {
+  SOLVER_IMAGE=ghcr.io/javajon/solver:0.4.2   ## <-- Set to the latest semver from https://github.com/javajon/katacoda-solver/releases]
+  SCENARIOS_ROOT=~/my-scenarios               ## <-- Set to your base source directory for your challenges and scenarios
+  if [[ ! "$(pwd)" =~ ^$SCENARIOS_ROOT.* ]]; then
+    echo "Please run this from $SCENARIOS_ROOT or one of its scenario or challenge subdirectory."
+    return 1;
+  fi
+  SUBDIR=$(echo $(pwd) | grep -oP "^$SCENARIOS_ROOT\K.*")
+  docker run --rm -it -v "$SCENARIOS_ROOT":/workdir -w /workdir/$SUBDIR $SOLVER_IMAGE "$@";
+}
+```
+On Windows, another option is [wsl2](https://docs.microsoft.com/en-us/windows/wsl/about).
+---
 
-To compress the binary before transfer use [UPX](https://upx.github.io/). The releases are compressed with this UPX tool:
-- Install UPX with `sudo apt-get update && yes | sudo apt-get install upx`
-- Compress the executable with: `upx --best --lzma $solver`
+The remaining instructions are for developers of this utility, not for authors of the challenges.
 
 ## Architecture stack
 
@@ -51,7 +57,6 @@ The application can be packaged using:
 ```shell script
 ./gradlew build
 ```
-
 It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
 Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
 
@@ -77,18 +82,17 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 ./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.native-image-xmx=8g
 ```
 
-If the quarkusBuild fails with an exit code 137 out of memory message, the error message suggests increasing the xmx heap size. Others indicate this is a problem with your local docker engine. Consider a [purge](https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes) of your docker engine caches `docker purge system --all` followed with a full host reboot.
+If the `quarkusBuild` fails with an exit code 137 out of memory message, the error message suggests increasing the xmx heap size. Others indicate this is a problem with your local docker engine. Consider a [purge](https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes) of your docker engine caches `docker purge system --all` followed with a full host reboot.
 
 With either of the above, you can then execute your native executable with:
 
 ```shell script
 ./build/solver-[version]-runner
 ```
-This binary, rename to `solver`, may be used by a Challenge.
+This binary, renamed to `solver`, may be used by a Challenge.
 
-## Running Solver
 
-As an author, the recommended way to install _Solver_ into your O'Reilly Challenge is covered in the documentation at [Challenges Solver Utility(https://www.katacoda.community/challenges/challenges-solver.html).
+## Developing and Debugging the Solver project code
 
 If you are a developer or tester of the _Solver_ utility below are some techniques to run it locally or copy it to a Challenge without the GitOps process.
 
@@ -96,16 +100,63 @@ You can run `solver` from Linux shells, but without the context of an O'Reilly C
 
 ### Run Locally via _über-jar_
 
-```shell
+```shell script
 ./gradlew build -Dquarkus.package.type=uber-jar && java -jar build/quarkus-app/quarkus-run.jar --help
 ```
+
+### Installing Solver into a Challenge
+
+The `solver` command-line tool cannot be loaded via the scenario's assets as there is a size limit at 9MB and the CLI tool is too large of an asset. Instead, there is a `wget` command in the `init-background.sh` script that installs _Solver_ when the challenge starts. This incurs a slight vulnerability if GitHub fails to deliver the requested CLI binary artifact from the release page then the challenge will break and the learner will have to reload the scenario. This source may change and remains on the roadmap.
+
+Ensure the `wget` pulls a specific version of _Solver_ and your challenge is tested with that specific version in place.
+
+### Rapid Development Testing
+
+For fast, local, iterative development and testing of the _Solver_ tool with a live challenge it's best to copy the updated _Solver_ binary directly to the challenge. There are a variety of places where a binary can be uploaded. Here is an example using the public service [transfer.sh](https://transfer.sh/)
+
+1. Build the binary with
+   ```shell script
+   ./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true
+   ```
+2. Identify the binary to copy:
+   ```shell script
+   export SOLVER_RUNNER=build/solver-$(git describe --tags $(git rev-list --tags --max-count=1))-$(git rev-parse --abbrev-ref HEAD)-runner
+
+3. Upload the executable to an ephemeral cloud directory:
+   ```shell script
+   STORAGE_URL=$(curl --upload-file $SOLVER_RUNNER https://transfer.sh/solver) && echo $STORAGE_URL
+   ```
+4. Copy the resulting storage URL to your clipboard.
+5. Start Challenge
+6. Copy `solver` binary into Challenge using the clipboard pasted URL:
+   ```shell script
+   curl -o solver <pasted-url>
+   ```
+7. Make executable, copy, and verify:
+   ```shell script
+   chmod +x solver && cp solver /usr/local/bin && solver --version
+   ```
+
+Some of these public services throttle throughput over repeated usage. You can also use [gdrive](https://github.com/prasmussen/gdrive) to download artifacts from Google drive. Never use these for the published challenges.
+
+To compress the binary before transfer use [UPX](https://upx.github.io/). The releases are compressed with this UPX tool:
+- Install UPX with
+  ```
+  sudo apt-get update && yes | sudo apt-get install upx
+  ```
+- Compress the executable with:
+  ```
+  upx --best --lzma $solver
+  ````
+
+
 ## Solver Version Tracking
 
 _Solver_ uses SemVer and the versions are tracked and bumped automatically. A release is created for any commit with a new SemVer git tag. There are GitHub actions to build, tag, and create releases. The SemVer tagging, bumping, and releasing process is based on the GitHub action [jefflinse/pr-semver-bump](https://github.com/jefflinse/pr-semver-bump).
 
 Direct commits are not permitted to the main branch via a GitHub branch rule. Only PRs are committed to main. A Merged pull request (PR) triggers the automated SemVer advancement and a new [release](https://github.com/javajon/katacoda-solver/releases). With this comes the PR comments and PR labels and direct the bumping of the major, minor, and patch numbers. When a PR is merged to `main`, it **must** be labeled with either `major`, `minor`, or `patch`. When a new SemVer tag is created a new GitHub release is created with the update `solver` binary. This technique follows some best practices for automated GitOps. Branch names can be reused, such as `update`. The workflow for the PR roughly follows this flow:
 
-```bash
+```shell script
 git checkout -b update
 (make changes)
 git add .

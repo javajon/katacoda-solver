@@ -25,8 +25,8 @@ jobs:
       - name: Build
         run: ./gradlew build
 
-      - name: Cleanup Gradle Cache
-        # Remove select Gradle cache files from GitHub Actions context
-        # to avoid potential problems with future Gradle tasks.
-        run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock ~/.gradle/caches/modules-2/gc.properties
+#      - name: Cleanup Gradle Cache
+#        # Remove select Gradle cache files from GitHub Actions context
+#        # to avoid potential problems with future Gradle tasks.
+#        run: |
+#          rm -f ~/.gradle/caches/modules-2/modules-2.lock ~/.gradle/caches/modules-2/gc.properties

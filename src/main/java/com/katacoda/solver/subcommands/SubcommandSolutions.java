@@ -21,9 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 @Command(name = "solutions", aliases = {"sol"}, commandListHeading = "Authoring", description = "Install solutions for testing. Requires authoring passcode.")
@@ -50,19 +48,19 @@ public class SubcommandSolutions implements Callable<Integer> {
         String key = "";
     }
 
-    private final String instructions = String.join(
-            " ",
-            "# Encryption Instructions%n%n",
-            "The assets/%1$s has been encrypted to the `assets/%1$s.enc` file",
-            "with the passcode: `%2$s`. The passcode is written to `assets/%1$s.md`",
-            "and should be stored in version control. This passcode is for authors and",
-            "other testers and should never be revealed to learners. Never copy",
-            "`%1$s.md` or the key as an asset to the Challenge. When in the Challenge,",
-            "as an author or tester, refer to this key to install the solutions file with",
-            "`solver solutions --decrypt <key>`. Manual decryption can be done with",
-            "`openssl enc -aes-128-ecb -d -in /opt/%1$s.enc -out /usr/local/bin/%1$s -K $(echo -n %2$s | hexdump -ve '1/1 \"%%.2x\"')`.",
-            "Once the `/usr/local/bin/%1$s` script is present the solver testing commands",
-            "like `next`, `all`, `until`, and `solve` will help solve each Challenge task.\n"
+    private final String INSTRUCTIONS = String.join(
+        "",
+        "# Encryption Instructions%n%n",
+        "The assets/%1$s has been encrypted to the `assets/%1$s.enc` file with the passcode:",
+        "%n%n`%2$s`%n%n",
+        "The passcode is written to `assets/%1$s.md` and should be stored in version control. ",
+        "This passcode is for authors and other testers and should never be revealed to learners. ",
+        "Never copy `%1$s.md` or the key as an asset to the Challenge. When in the Challenge, as",
+        "an author or tester, refer to this key to install the solutions file with ",
+        "`solver solutions --decrypt <key>`. Manual decryption can be done with ",
+        "`openssl enc -aes-128-ecb -d -in /opt/%1$s.enc -out /usr/local/bin/%1$s -K $(echo -n %2$s | hexdump -ve '1/1 \"%%.2x\"')`",
+        "When the `/usr/local/bin/%1$s` script is decrypted the solver testing commands",
+        "`next`, `all`, and `until` will help solve each Challenge task."
     );
 
     @Override
@@ -133,7 +131,7 @@ public class SubcommandSolutions implements Callable<Integer> {
     }
 
     private void showInstructions(String keyHex) {
-        String message = String.format(instructions, SOLUTIONS_SCRIPT, keyHex);
+        String message = String.format(INSTRUCTIONS, SOLUTIONS_SCRIPT, keyHex);
         out(message);
     }
 
@@ -255,7 +253,7 @@ public class SubcommandSolutions implements Callable<Integer> {
 
     private void recordKey(String key) throws SolutionsException {
         try {
-            String message = String.format(instructions, SOLUTIONS_SCRIPT, key);
+            String message = String.format(INSTRUCTIONS, SOLUTIONS_SCRIPT, key);
             Files.writeString(Paths.get(encryptLocation().getParent().toString(), SOLUTIONS_SCRIPT + ".md"), message);
         } catch (IOException e) {
             throw new SolutionsException("Could not record key file because: " + e.getMessage(), e);

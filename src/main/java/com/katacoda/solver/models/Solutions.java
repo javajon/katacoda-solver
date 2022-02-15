@@ -43,17 +43,20 @@ public class Solutions {
     private File getFunctionSourcingScript() {
 
         if (!SOURCER.exists() || Configuration.getContextType() == Configuration.ContextType.development) {
-            try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(SOURCER)))) {
-                writer.println("#!/bin/bash");
-                writer.println("# Inserted functions");
-                writer.println(getSourceAsString());
-                writer.println("# Inserted functions");
-                writer.println("function function_exists() {");
-                writer.println(" [ $(type -t \"$1\")\"\" == 'function' ]"); // https://stackoverflow.com/a/9002012/3236525
-                writer.println("}");
-                writer.println("\"$@\""); // Call functions above based on passed in parameter(s)
-            } catch (IOException e) {
-                LOG.error(e.getMessage(), e);
+            String functions = getSourceAsString();
+            if (!functions.trim().isEmpty()) {
+                try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(SOURCER)))) {
+                    writer.println("#!/bin/bash");
+                    writer.println("# Inserted functions");
+                    writer.println(functions);
+                    writer.println("# Inserted functions");
+                    writer.println("function function_exists() {");
+                    writer.println(" [ $(type -t \"$1\")\"\" == 'function' ]"); // https://stackoverflow.com/a/9002012/3236525
+                    writer.println("}");
+                    writer.println("\"$@\""); // Call functions above based on passed in parameter(s)
+                } catch (IOException e) {
+                    LOG.error(e.getMessage(), e);
+                }
             }
         }
 
@@ -159,11 +162,13 @@ public class Solutions {
                 if (solutionsAuthoring.exists()) {
                     return new FileInputStream(solutionsAuthoring);
                 }
+                break;
             case challenge:
                 File solutionsChallenge = new File(LOCATION_IN_CHALLENGE.toFile(), SOLUTIONS_SCRIPT);
                 if (solutionsChallenge.exists()) {
                     return new FileInputStream(solutionsChallenge);
                 }
+                break;
         }
 
         return InputStream.nullInputStream();

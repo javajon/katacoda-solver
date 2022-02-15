@@ -21,14 +21,14 @@ public class Verifications {
     public static final String VERIFICATIONS_SCRIPT = "verifications.sh";
 
 
-    public int requestTaskAdvance(int task) {
-        int status = verify(task);
+    public boolean requestTaskAdvance(int currentTask) {
+        int status = verify(currentTask);
 
         if (status == 0) {
             advanceTask();
         }
 
-        return status;
+        return Configuration.isChallengeComplete() || (Configuration.getCurrentTask() == currentTask+1);
     }
 
     public int executeShellFunction(String... functionAndParams) throws IOException {

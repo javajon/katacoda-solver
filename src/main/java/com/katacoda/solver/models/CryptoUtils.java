@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 /**
- * A utility class that encrypts or decrypts inputs into outputs..
+ * A utility class that encrypts or decrypts inputs into outputs.
  *
  * @author www.codejava.net
  * https://www.codejava.net/coding/file-encryption-and-decryption-simple-example

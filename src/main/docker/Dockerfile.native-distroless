@@ -14,12 +14,20 @@
 # docker run -i --rm quarkus/solver
 #
 ###
-FROM quay.io/quarkus/quarkus-distroless-image:1.0
-COPY build/*-runner /application
+FROM alpine as workdir-creator
+RUN mkdir /workdir
 
-USER nonroot
+
+FROM quay.io/quarkus/quarkus-distroless-image:1.0
 
 ENV SOLVER_CONTEXT=challenge
+ENV SOLVER_CONTAINERIZED=true
 
-ENTRYPOINT ["./application"]
+COPY --from=workdir-creator /workdir /workdir
+WORKDIR /workdir
+
+COPY build/*-runner /application
+USER nonroot
+
+ENTRYPOINT ["/application"]
 CMD ["--help"]

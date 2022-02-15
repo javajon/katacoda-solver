@@ -14,7 +14,7 @@ import picocli.CommandLine.Spec;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 
-@Command(name = "hint", description = "Get hint give a task number and hint number.")
+@Command(name = "hint", description = "Get hint given a task number and hint number.")
 public class SubcommandHint implements Callable<Integer> {
     private static final Logger LOG = Logger.getLogger(SubcommandHint.class);
 

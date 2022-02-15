@@ -1,7 +1,6 @@
 package com.katacoda.solver;
 
 import com.katacoda.solver.models.Configuration;
-import org.jboss.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -10,13 +9,12 @@ import picocli.CommandLine;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SolverCLITests {
-
-    private static final Logger LOG = Logger.getLogger(SolverCLITests.class);
 
     private final String REG_EX_SEM_VER = "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?$";
 
@@ -36,7 +34,7 @@ class SolverCLITests {
     }
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         cli = new SolverTopCommand();
         cmd = new CommandLine(cli);
 
@@ -47,7 +45,7 @@ class SolverCLITests {
     }
 
     @Test
-    public void version() throws Exception {
+    public void version()  {
         int exitCode = cmd.execute("--version");
         assertEquals(0, exitCode);
         if (!sw.toString().contains("-")) {
@@ -57,7 +55,7 @@ class SolverCLITests {
     }
 
     @Test
-    public void help() throws Exception {
+    public void help() {
         int exitCode = cmd.execute("--help");
         assertEquals(0, exitCode);
         assertTrue(sw.toString().trim().contains("Usage: solver"));
@@ -67,21 +65,21 @@ class SolverCLITests {
     }
 
     @Test
-    public void statusFull() throws Exception {
+    public void statusFull()  {
         int exitCode = cmd.execute("status");
         assertEquals(0, exitCode);
         assertEquals("Challenge is incomplete and next task to solve is 1.", sw.toString().trim());
     }
 
     @Test
-    public void statusQuiet() throws Exception {
+    public void statusQuiet() {
         int exitCode = cmd.execute("status", "--quiet");
         assertEquals(0, exitCode);
         assertEquals("1", sw.toString().trim());
     }
 
     @Test
-    public void reset() throws Exception {
+    public void reset() {
         Configuration.setCurrentTask(2);
         int exitCode = cmd.execute("reset");
         assertEquals(0, exitCode);
@@ -90,7 +88,7 @@ class SolverCLITests {
 
     @Disabled
     @Test
-    public void next() throws Exception {
+    public void next() {
         int exitCode = cmd.execute("next");
         assertEquals(0, exitCode);
         assertEquals("Task 1 verification\n" +
@@ -108,7 +106,7 @@ class SolverCLITests {
     }
 
     @Test
-    public void hint() throws Exception {
+    public void hint() {
         int exitCode = cmd.execute("hint", "1", "1");
         assertEquals(0, exitCode);
         assertTrue(sw.toString().trim().startsWith("A Deployment called `redis` has not been rolled out yet to the default namespace."));
@@ -121,7 +119,7 @@ class SolverCLITests {
     }
 
     @Test
-    public void quietHint() throws Exception {
+    public void quietHint(){
         int exitCode = cmd.execute("hint", "1", "1", "--quiet");
         assertEquals(0, exitCode);
         assertTrue(sw.toString().trim().startsWith("A Deployment called `redis` has not been rolled out yet to the default namespace."));
@@ -150,7 +148,7 @@ class SolverCLITests {
     }
 
     @Test
-    public void view() throws Exception {
+    public void view()  {
         int exitCode = cmd.execute("view", "1");
         assertEquals(0, exitCode);
         assertTrue(sw.toString().contains("Verifications for"));
@@ -159,14 +157,14 @@ class SolverCLITests {
     }
 
     @Test
-    public void viewInvalidTask() throws Exception {
+    public void viewInvalidTask()  {
         int exitCode = cmd.execute("view", "99");
         assertEquals(-1, exitCode);
         assertTrue(sw.toString().contains("No information is available for requested task 99"));
     }
 
     @Test
-    public void solutionsEncryptDecrypt() throws Exception {
+    public void solutionsEncryptDecrypt() {
         int exitCode = cmd.execute("sol", "-e");
         assertEquals(-0, exitCode);
 
@@ -183,51 +181,36 @@ class SolverCLITests {
     }
 
     @Test
-    public void create() throws Exception {
+    public void create() throws IOException {
 
-        Path tmpTest = Path.of(System.getProperty("java.io.tmpdir"), "test-create");
-
-        // Clean output target
-        if (tmpTest.toFile().exists()) {
-            boolean deleteSuccess = removeAll(tmpTest.toFile());
-            assertTrue(deleteSuccess);
+        // Scrub testing directory in the build location
+        String testingDirectory =  "build/test-challenges";
+        if (new File(testingDirectory).exists()) {
+            Files.walk(Path.of(".", testingDirectory))
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
         }
 
         // Create new
-        int exitCode = cmd.execute("create", "--archetype=linux", "--destination=" + tmpTest.toFile());
+        int exitCode = cmd.execute("create", "--archetype", "linux", "--target", testingDirectory);
         assertEquals(0, exitCode);
 
         // Type to create without force
-        exitCode = cmd.execute("create", "--archetype=linux", "--destination=" + tmpTest.toFile());
+        exitCode = cmd.execute("create", "--archetype=linux", "--target", testingDirectory);
         assertEquals(2, exitCode);
 
-        exitCode = cmd.execute("create", "--archetype=linux", "--destination=" + tmpTest.toFile(), "--force");
+        exitCode = cmd.execute("create", "--archetype=linux", "--force", "--target", testingDirectory);
         assertEquals(0, exitCode);
 
-        Path project = Path.of(tmpTest.toString(), "challenge-linux-solver");
+        Path project = Path.of(testingDirectory.toString(), "challenge-linux");
         assertTrue(project.toFile().exists());
 
-        tmpTest.toFile().deleteOnExit();
-    }
+        exitCode = cmd.execute("create", "--archetype=basic", "--target", testingDirectory);
+        assertEquals(3, exitCode);
 
-    private boolean removeAll(File file) {
-        // Safety first
-        if (!file.getAbsolutePath().startsWith(System.getProperty("java.io.tmpdir"))) {
-            return false;
-        }
-
-        File[] contents = file.listFiles();
-        if (contents != null) {
-            for (File subFile : contents) {
-                if (!Files.isSymbolicLink(subFile.toPath())) {
-                    if (!removeAll(subFile)) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return file.delete();
+        exitCode = cmd.execute("create", "--archetype=kubernetes", "--target", testingDirectory);
+        assertEquals(3, exitCode);
     }
 
     private static void touch(File file) throws IOException {
