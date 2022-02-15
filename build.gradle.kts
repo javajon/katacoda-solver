@@ -38,11 +38,15 @@ fun String.runCommand(currentWorkingDir: File = file("./")): String {
     return String(byteOut.toByteArray()).trim()
 }
 
-val gitBranch = "git rev-parse --abbrev-ref HEAD".runCommand()
-val gitCommitIdLast = "git rev-list --tags --max-count=1".runCommand()
-val gitTag = "git describe --tags $gitCommitIdLast".runCommand()
+fun versionAtDevTime(): String {
+    val gitBranch = "git rev-parse --abbrev-ref HEAD".runCommand()
+    val gitCommitIdLast = "git rev-list --tags --max-count=1".runCommand()
+    val gitTag = "git describe --tags $gitCommitIdLast".runCommand()
 
-project.version = project.findProperty("ciSemVer") ?: gitTag + "-" + gitBranch
+    return gitTag + "-" + gitBranch
+}
+
+project.version = project.findProperty("ciSemVer") ?: versionAtDevTime()
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -70,7 +74,7 @@ tasks {
 
     val ver by creating {
         doLast {
-            println("version: " + gitTag + "-" + gitBranch)
+            println(versionAtDevTime())
         }
     }
 }

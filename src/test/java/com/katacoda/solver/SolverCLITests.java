@@ -169,7 +169,7 @@ class SolverCLITests {
         assertEquals(-0, exitCode);
 
         String message = sw.toString();
-        int start = message.indexOf("passcode: `") + 11;
+        int start = message.indexOf(" passcode:") + 13;
         String key = message.substring(start, start + 16);
 
         exitCode = cmd.execute("solutions", "-d", key);
