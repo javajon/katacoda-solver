@@ -23,7 +23,7 @@ jobs:
           cache: gradle
 
       - name: Build
-        run: ./gradlew build -PciSemVer=x.x.x
+        run: ./gradlew build -PciSemVer=0.0.0-BranchBuild
 
 #      - name: Cleanup Gradle Cache
 #        # Remove select Gradle cache files from GitHub Actions context
