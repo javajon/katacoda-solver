@@ -1,11 +1,11 @@
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.ByteArrayOutputStream
 import java.util.*
 
 plugins {
     java
     id("io.quarkus")
-    id("com.github.jmongard.git-semver-plugin") version "0.4.2"
 }
 
 repositories {
@@ -21,14 +21,32 @@ dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation("io.quarkus:quarkus-picocli")
     implementation("io.quarkus:quarkus-arc")
-    implementation("com.jayway.jsonpath:json-path:2.6.0")
+    implementation("com.jayway.jsonpath:json-path:2.7.0")
 
     testImplementation("io.quarkus:quarkus-junit5:2.4.1.Final")
 }
 
 group = "com.katacoda"
 
-project.version = project.findProperty("ciSemVer") ?: semver.version
+fun String.runCommand(currentWorkingDir: File = file("./")): String {
+    val byteOut = ByteArrayOutputStream()
+    project.exec {
+        workingDir = currentWorkingDir
+        commandLine = this@runCommand.split("\\s".toRegex())
+        standardOutput = byteOut
+    }
+    return String(byteOut.toByteArray()).trim()
+}
+
+fun versionAtDevTime(): String {
+    val gitBranch = "git rev-parse --abbrev-ref HEAD".runCommand()
+    val gitCommitIdLast = "git rev-list --tags --max-count=1".runCommand()
+    val gitTag = "git describe --tags $gitCommitIdLast".runCommand()
+
+    return gitTag + "-" + gitBranch
+}
+
+project.version = project.findProperty("ciSemVer") ?: versionAtDevTime()
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -56,7 +74,7 @@ tasks {
 
     val ver by creating {
         doLast {
-            println("Version: " + project.version)
+            println(versionAtDevTime())
         }
     }
 }

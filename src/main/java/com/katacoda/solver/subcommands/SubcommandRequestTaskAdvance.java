@@ -18,13 +18,13 @@ public class SubcommandRequestTaskAdvance implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        int result = new Verifications().requestTaskAdvance(task);
-        out().printf("Verifications %s for task %d.%n", result == 0 ? "passed" : "failed", task);
-        if (result == 0) {
+        boolean advanced = new Verifications().requestTaskAdvance(task);
+        out().printf("Verifications %s for task %d.%n", advanced ? "passed" : "failed", task);
+        if (advanced) {
             out().printf("Advancing to task %d.%n", task);
         }
 
-        return result;
+        return task;
     }
 
     private PrintWriter out() {

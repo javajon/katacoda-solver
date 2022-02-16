@@ -10,7 +10,7 @@ import picocli.CommandLine.Spec;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 
-@Command(name = "until", description = "Solve all tasks from current task until reaching given task number")
+@Command(name = "until", description = "Solve all tasks from current task until reaching given task number.")
 public class SubcommandUntil implements Callable<Integer> {
 
     @Spec CommandSpec spec;

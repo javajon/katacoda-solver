@@ -2,7 +2,7 @@
 
 function verify_task_1() {
    echo "Task 1 verification"
-   if [ ! -f 'test.txt' ]; then
+   if [ ! -f './src/test/resources/test.txt' ]; then
       return 1
    fi
 }

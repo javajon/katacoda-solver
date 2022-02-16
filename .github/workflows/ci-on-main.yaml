@@ -70,10 +70,7 @@ jobs:
         run: ./gradlew build
 
       - name: Build native
-        run: ./gradlew build -PciSemVer=${{ steps.semver_bump_data.outputs.version }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11
-
-#      - name: Rename binary
-#        run: mv build/solver-${{ steps.semver_bump_data.outputs.version }}-runner build/solver-${{ steps.semver_bump_data.outputs.version }}-linux
+        run: ./gradlew build -PciSemVer=${{ steps.semver_bump_data.outputs.version }} -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:22.0-java11
 
       - name: Compress native with UPX
         uses: crazy-max/ghaction-upx@v1.4.0
@@ -81,11 +78,10 @@ jobs:
           version: v3.96
           files: |
             build/solver-${{ steps.semver_bump_data.outputs.version }}-runner
-#            build/solver-${{ steps.semver_bump_data.outputs.version }}-linux
         # args: --lzma
         # lzma, best, brute all give smaller size, but slow execution,
         # no arg, default, compression still compresses albeit
-        # larger but larger with faster execution
+        # larger with faster execution
         # https://github.com/upx/upx/blob/8d42b12117130b944023335cc2b76072c145db4d/src/main.cpp
 
       - name: List the built binaries
@@ -96,7 +92,6 @@ jobs:
         with:
           name: Release ${{ steps.semver_bump_data.outputs.version }}
           tag_name: ${{ steps.semver_bump_data.outputs.version }}
-          #  body: ${{steps.github_release.outputs.changelog}}
           files: |
             build/solver-*
         env:
@@ -109,15 +104,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Container Image
+      - name: Build and Publish Container Image
         run: |
           IMAGE=ghcr.io/javajon/solver:${{ steps.semver_bump_data.outputs.version }}
           docker build -f src/main/docker/Dockerfile.native-distroless --tag $IMAGE .
           docker run $IMAGE
           docker push $IMAGE
 
-      - name: Cleanup Gradle Cache
-        # Remove select Gradle cache files from GitHub Actions context
-        # to avoid potential problems with future Gradle tasks.
-        run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock ~/.gradle/caches/modules-2/gc.properties
+#      - name: Cleanup Gradle Cache
+#        # Remove select Gradle cache files from GitHub Actions context
+#        # to avoid potential problems with future Gradle tasks.
+#        run: |
+#          rm -f ~/.gradle/caches/modules-2/modules-2.lock ~/.gradle/caches/modules-2/gc.properties

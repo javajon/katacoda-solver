@@ -2,11 +2,6 @@ package com.katacoda.solver.models;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class VerificationsTest {
@@ -14,14 +9,14 @@ class VerificationsTest {
     private static final String BASH_BANG = "#!/bin/bash";
 
     @Test
-    void requestTaskAdvance() throws IOException {
+    void requestTaskAdvance() {
         Configuration.setCurrentTask(1);
-        assertEquals(1, new Verifications().requestTaskAdvance(Configuration.getCurrentTask()));
-        File file = new File("test.txt");
-        touch(file);
-        file.deleteOnExit();
-        assertEquals(0, new Verifications().requestTaskAdvance(Configuration.getCurrentTask()));
-        assertEquals(2, Configuration.getCurrentTask());
+
+        assertTrue(new Verifications().requestTaskAdvance(Configuration.getCurrentTask()));
+        assertTrue(new Verifications().requestTaskAdvance(Configuration.getCurrentTask()));
+        assertTrue(new Verifications().requestTaskAdvance(Configuration.getCurrentTask()));
+        assertTrue(Configuration.isChallengeComplete());
+
         Configuration.resetCurrentTask();
     }
 
@@ -30,13 +25,5 @@ class VerificationsTest {
         String source = new Verifications().getSourceAsString();
         assertFalse(source.isEmpty());
         assertTrue(source.contains(BASH_BANG));
-    }
-
-    private void touch(File file) throws IOException {
-        if (!file.exists()) {
-            new FileOutputStream(file).close();
-        }
-
-        file.setLastModified(System.currentTimeMillis());
     }
 }

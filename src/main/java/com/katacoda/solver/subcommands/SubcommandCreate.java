@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-@Command(name = "create", commandListHeading = "Authoring", description = "Create a Challenge project from the given archetype when in authoring context")
+@Command(name = "create", commandListHeading = "Authoring", description = "Create a Challenge project from the given archetype when in authoring context.")
 public class SubcommandCreate implements Callable<Integer> {
 
     private static final Logger LOG = Logger.getLogger(Configuration.class);
@@ -34,66 +34,66 @@ public class SubcommandCreate implements Callable<Integer> {
     private static final File INDEX = new File("index.json");
     private static final File HINT = new File("hints.sh");
 
-    // TODO
-    private static final File VERIFY = new File("verify.sh");
-    private static final File HINTS_MD = new File("assets/hints.md");
-    private static final File VERIFICATIONS = new File("assets/verifications.sh");
-    private static final File SOLUTIONS = new File("assets/solutions.sh");
-
     private enum Archetypes {basic, linux, kubernetes}
 
-    @Option(names = {"-a", "--archetype"}, required = true, defaultValue = "linux", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, description = "The type of challenge to create.")
+    @Option(names = {"-a", "--archetype"}, required = true, defaultValue = "linux", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, description = "The type of challenge to create. Default linux.")
     private Archetypes archetype = Archetypes.kubernetes;
 
-    @Option(names = {"-d", "--destination"}, description = "Path to destination where a new directory of the archetype will be created. Path directories are created if not present.")
-    private String destination = ".";
+    @Option(names = {"-n", "--name"}, required = false, description = "Optional name of directory for challenge. Default challenge-<archetype>.", defaultValue = "")
+    private String name = "";
 
-    @Option(names = {"-f", "--force"}, required = false, description = "Force overwrite of existing files with confirmation.", defaultValue = "false")
+    @Option(names = {"-f", "--force"}, required = false, description = "Force overwrite of existing files with confirmation. Default false.", defaultValue = "false")
     private boolean force = false;
+
+    @Option(names = {"-t", "--target"}, required = false, description = "Target for new challenge. Default current directory. Hidden from users.", defaultValue = ".")
+    private String target = ".";
+
+    /** The directory where the archetype subdirectory is created. Typically working directory, but unit tests can secretly override. */
+    private Path targetPath = Path.of(target);
 
     @Override
     public Integer call() {
+
+        targetPath = Path.of(target);
+        if (!targetPath.toFile().exists()) {
+            targetPath.toFile().mkdir();
+        }
 
         if (Configuration.getContextType() == Configuration.ContextType.challenge) {
             out("Command only valid during challenge authoring.");
             return 1;
         }
 
-        Path target = Path.of(destination);
-        if (!target.toFile().exists()) {
-            target.toFile().mkdirs();
-        } else if (!force) {
-            if (Objects.requireNonNull(target.toFile().listFiles()).length > 0) {
-                out(String.format("The archetype was not created because the destination %s exists with files in it. The destination remains untouched. Use --force to override.", target.toString()));
-                return 2;
-            }
+        if ( name.isEmpty()) {
+            name = "challenge-" + archetype.name();
         }
 
-        if (!target.toFile().isDirectory()) {
-            out(String.format("Destination path %s to create the archetype is not a directory.", target.toAbsolutePath()));
-            return 3;
+        File destination = new File(targetPath.toFile(), name);
+        if (!force && destination.exists()) {
+            out(String.format("The archetype was not created because the destination %s exists with files in it. The destination remains untouched. Use --force to override.", destination));
+            return 2;
         }
-
-        String projectDirName = "";
 
         switch (archetype) {
-
             case basic:
+                // createBasic(targetPath, name);
                 out("Archetype `basic` is not functional yet. See roadmap.");
-                // createScratch();
-                return 4;
+                return 3;
 
             case linux:
-                projectDirName = createLinux(target);
-                out(String.format("A new %s archetype project has been created at %s/%s", archetype, destination, projectDirName));
+                createLinux(targetPath, name);
                 break;
 
             case kubernetes:
+                // createKubernetes(targetPath, name);
                 out("Archetype `kubernetes` is not functional yet. See roadmap.");
-                return 5;
+                return 3;
         }
 
-        return syncSolverVersionReference(target, projectDirName);
+        Path projectPath = Path.of(targetPath.toString(), name);
+        out(String.format("A new %s archetype project has been created at %s.", archetype, projectPath));
+
+        return syncSolverVersionReference(projectPath);
     }
 
     /**
@@ -104,11 +104,11 @@ public class SubcommandCreate implements Callable<Integer> {
      * @param projectDirName
      * @return
      */
-    private int syncSolverVersionReference(Path target, String projectDirName) {
+    private int syncSolverVersionReference(Path projectPath) {
         String versionMessage = new VersionProvider().getVersion()[0];
         String version = versionMessage.split("\\s+")[2]; // extract version from "Solver version x.y.z"
 
-        Path scriptFile = target.resolve(projectDirName).resolve("init-background.sh");
+        Path scriptFile = projectPath.resolve("init-background.sh");
         try (Stream<String> lines = Files.lines(scriptFile)) {
             List<String> replaced = lines
                     .map(line -> swap(line, version))
@@ -133,7 +133,7 @@ public class SubcommandCreate implements Callable<Integer> {
     /**
      * Bare minimum skeleton.
      */
-    private void createScratch() {
+    private void createBasic() {
         String challengeSrcDir = "";
         File indexJson = new File(challengeSrcDir, INDEX.toString());
 
@@ -148,11 +148,11 @@ public class SubcommandCreate implements Callable<Integer> {
         create(HINT);
     }
 
-    private String createLinux(Path destination) {
+    private String createLinux(Path destination, String name) {
         try (ZipInputStream zis = new ZipInputStream(
                 Objects.requireNonNull(
                         getClass().getClassLoader().getResourceAsStream(LINUX_ARCHETYPE)))) {
-            return expandContents(destination.toFile(), zis);
+            return expandContents(destination.toFile(), zis, name);
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
         }
@@ -160,7 +160,7 @@ public class SubcommandCreate implements Callable<Integer> {
         return "";
     }
 
-    private String expandContents(File destDir, ZipInputStream zis) throws IOException {
+    private String expandContents(File destDir, ZipInputStream zis, String name) throws IOException {
         byte[] buffer = new byte[1024];
 
         ZipEntry zipEntry = zis.getNextEntry();
@@ -188,6 +188,8 @@ public class SubcommandCreate implements Callable<Integer> {
             }
             zipEntry = zis.getNextEntry();
         }
+
+        new File(destDir, projectDirName).renameTo(new File(destDir, name));
 
         return projectDirName;
     }

@@ -7,8 +7,8 @@ import picocli.CommandLine.Command;
 @TopCommand
 @Command(name = "solver", mixinStandardHelpOptions = true,
         versionProvider = com.katacoda.solver.models.VersionProvider.class,
-        description = "An authoring tool and utility for the O'Reilly Challenges framework. Verify tasks, provide hints, and solves tasks in the Challenge. Works with the provided hints.md, verifications.sh, and solutions.sh as the supporting sources.\n",
-        footer = "\nOnce solutions have been decripted command such as next, all, and until will solve the challenge. Before publication, the 'all' command must solve all tasks without error.",
+        description = "An authoring tool and utility for the O'Reilly Challenges framework. Verify tasks, provide hints, and solve tasks in a Challenge. Works with the provided hints.md, verifications.sh, and solutions.sh as the supporting sources.\n",
+        footer = "\nOnce solutions have been decrypted commands such as next, all, and until will solve the challenge. Before publication, the 'all' command must solve all tasks without error.",
         subcommands = {
                 // Primary interactive commands
                 SubcommandSolutions.class,
