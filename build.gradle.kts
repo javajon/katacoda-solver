@@ -1,11 +1,11 @@
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.ByteArrayOutputStream
 import java.util.*
 
 plugins {
     java
     id("io.quarkus")
+    id("com.github.jmongard.git-semver-plugin") version "0.4.2"
 }
 
 repositories {
@@ -28,25 +28,7 @@ dependencies {
 
 group = "com.katacoda"
 
-fun String.runCommand(currentWorkingDir: File = file("./")): String {
-    val byteOut = ByteArrayOutputStream()
-    project.exec {
-        workingDir = currentWorkingDir
-        commandLine = this@runCommand.split("\\s".toRegex())
-        standardOutput = byteOut
-    }
-    return String(byteOut.toByteArray()).trim()
-}
-
-fun versionAtDevTime(): String {
-    val gitBranch = "git rev-parse --abbrev-ref HEAD".runCommand()
-    val gitCommitIdLast = "git rev-list --tags --max-count=1".runCommand()
-    val gitTag = "git describe --tags $gitCommitIdLast".runCommand()
-
-    return gitTag + "-" + gitBranch
-}
-
-project.version = project.findProperty("ciSemVer") ?: versionAtDevTime()
+project.version = project.findProperty("ciSemVer") ?: semver.version
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -74,7 +56,7 @@ tasks {
 
     val ver by creating {
         doLast {
-            println(versionAtDevTime())
+            println("Version: " + project.version)
         }
     }
 }
