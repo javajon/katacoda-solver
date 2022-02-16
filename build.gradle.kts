@@ -56,7 +56,7 @@ tasks {
 
     val ver by creating {
         doLast {
-            println("Version: " + project.version)
+            println("Version is " + project.version)
         }
     }
 }
