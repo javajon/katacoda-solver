@@ -33,7 +33,11 @@ function solver() {
   docker run --rm -it -v "$SCENARIOS_ROOT":/workdir -w /workdir/$SUBDIR $SOLVER_IMAGE "$@";
 }
 ```
+
+**Note**: The above function expects GNU grep. This is not the version installed by default on macOS. You can easily install the GNU version by using [homebrew](https://brew.sh/) and then just changing the call to `grep` in the above function to `ggrep`.
+
 On Windows, another option is [wsl2](https://docs.microsoft.com/en-us/windows/wsl/about).
+
 ---
 
 The remaining instructions are for developers of this utility, not for authors of the challenges.
