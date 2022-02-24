@@ -10,6 +10,8 @@ class HintsTest {
 
     @Test
     void getHint() {
+        System.out.println("hint: " + hints.getHint(1, 1));
+
         assertFalse(hints.getHint(1, 1).isEmpty());
         assertFalse(hints.getHint(1, 2).isEmpty());
         assertFalse(hints.getHint(1, 3).isEmpty());

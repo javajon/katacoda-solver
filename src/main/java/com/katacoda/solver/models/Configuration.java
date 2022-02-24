@@ -6,7 +6,9 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.Properties;
 
-/** Persist state of challenge across multiple calls to this application. */
+/**
+ * Persist state of challenge across multiple calls to this application.
+ */
 public class Configuration {
     private static final Logger LOG = Logger.getLogger(Configuration.class);
 
@@ -16,11 +18,13 @@ public class Configuration {
     private final static File SOLVER_SHARED_PROPERTIES = new File(System.getProperty("java.io.tmpdir"),
             "solver.properties");
 
+    public static final String SOLVER_CONTEXT = "SOLVER_CONTEXT";
+
     public static void resetCurrentTask() {
         setCurrentTask(1);
     }
 
-    public static void setHintEnabled(boolean enabled)  {
+    public static void setHintEnabled(boolean enabled) {
         try {
             Properties props = load();
             props.setProperty("hints.enabled", Boolean.toString(enabled));
@@ -50,7 +54,7 @@ public class Configuration {
         return -1;
     }
 
-    public static void setCurrentTask(int task)  {
+    public static void setCurrentTask(int task) {
         Properties props;
         try {
             props = load();
@@ -102,20 +106,29 @@ public class Configuration {
     }
 
     public static ContextType getContextType() {
-        if (Path.of("/usr", "local", "bin", "challenge.sh").toFile().exists()) {
-            return ContextType.challenge;
-        }
-
-        if (new File("index.json").exists()) {
-            return ContextType.authoring;
-        }
-
         ContextType context = ContextType.development;
 
-        String contextValue = System.getProperty("SOLVER_CONTEXT", context.name());
+        if (Path.of("/usr", "local", "bin", "challenge.sh").toFile().exists()) {
+            context = ContextType.challenge;
+        }
+
+        String[] evidenceOfChallenge = {"index.json", "assets", "hint.sh", "verify.sh"};
+        for (String artifact : evidenceOfChallenge) {
+            if (new File(artifact).exists()) {
+                context =  ContextType.authoring;
+                break;
+            }
+        }
+
+        // Consider environment setting override, often done in unit tests
+        String contextValue = System.getProperty(SOLVER_CONTEXT, context.name());
         try {
+            ContextType beforeOverride = context;
             context = ContextType.valueOf(contextValue.toLowerCase().trim());
-        } catch(IllegalArgumentException e) {
+            if (context != beforeOverride) {
+                LOG.info("Context override from " + beforeOverride + " to " + context + ".");
+            }
+        } catch (IllegalArgumentException e) {
             LOG.error("Ignoring invalid SOLVER_CONTEXT value of " + contextValue + " using context " + context.name(), e);
         }
 

@@ -16,7 +16,7 @@
 ###
 FROM alpine as workdir-creator
 RUN mkdir /workdir
-
+RUN apt-get shellcheck
 
 FROM quay.io/quarkus/quarkus-distroless-image:1.0
 
@@ -24,6 +24,7 @@ ENV SOLVER_CONTEXT=challenge
 ENV SOLVER_CONTAINERIZED=true
 
 COPY --from=workdir-creator /workdir /workdir
+COPY --from=workdir-creator /usr/local/bin/shellcheck /usr/local/bin
 WORKDIR /workdir
 
 COPY build/*-runner /application

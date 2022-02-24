@@ -108,7 +108,7 @@ public class Solutions {
         if (exist(task)) {
             solveFunction(task);
         } else {
-            String message = String.format("Cannot solve the task. The solutions.sh testing functions script was not found or the solve_task_%d function was not found. O'Reilly team members can run `solver solution --decrypt <key>` to enable the solutions script. The key can be referenced in the source code's solutions.sh.md file.", task);
+            String message = String.format("Cannot solve the task. The solutions.sh testing functions script was not found or the solve_task_%d function was not found. O'Reilly team members can run `solver solutions --decrypt <key>` to enable the solutions script. The key can be referenced in the source code's solutions.sh.md file.", task);
             out.println(Ansi.AUTO.string("@|bold,yellow " + message + "|@"));
             return -1;
         }

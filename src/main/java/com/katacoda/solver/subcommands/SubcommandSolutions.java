@@ -48,10 +48,12 @@ public class SubcommandSolutions implements Callable<Integer> {
         String key = "";
     }
 
+    private final String INSTRUCTIONS_SHORT = "The assets/%1$s has been encrypted to `assets/%1$s.enc` with the passcode: `%2$s`. Details in assets/%1$s";
+
     private final String INSTRUCTIONS = String.join(
         "",
         "# Encryption Instructions%n%n",
-        "The assets/%1$s has been encrypted to the `assets/%1$s.enc` file with the passcode:",
+        "The assets/%1$s has been encrypted to `assets/%1$s.enc` with the passcode:",
         "%n%n`%2$s`%n%n",
         "The passcode is written to `assets/%1$s.md` and should be stored in version control. ",
         "This passcode is for authors and other testers and should never be revealed to learners. ",
@@ -131,7 +133,7 @@ public class SubcommandSolutions implements Callable<Integer> {
     }
 
     private void showInstructions(String keyHex) {
-        String message = String.format(INSTRUCTIONS, SOLUTIONS_SCRIPT, keyHex);
+        String message = String.format(INSTRUCTIONS_SHORT, SOLUTIONS_SCRIPT, keyHex);
         out(message);
     }
 
