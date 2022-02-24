@@ -25,7 +25,7 @@ import picocli.CommandLine.Command;
 
                 // To help authors at writing time
                 SubcommandCreate.class,
-                SubcommandCheck.class,
+                SubcommandLint.class,
 
                 // Called from challenge framework (hidden from CLI)
                 SubcommandRequestTaskAdvance.class,

@@ -24,6 +24,10 @@ dependencies {
     implementation("io.quarkus:quarkus-arc")
     implementation("com.jayway.jsonpath:json-path:2.7.0")
 
+    implementation ("com.fasterxml.jackson.core:jackson-core:2.13.1")
+    implementation ("com.fasterxml.jackson.core:jackson-databind:2.13.1")
+    implementation ("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
+
     testImplementation("io.quarkus:quarkus-junit5:2.4.1.Final")
 }
 

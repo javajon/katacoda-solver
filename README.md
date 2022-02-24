@@ -13,28 +13,34 @@ If you are an author using this utility, your feedback is important, and please 
 As an author there are two places where Solver can help you:
 
 1) Locally in your development environment when creating the content
-2) At runtime, within the scenario.
+2) At runtime, within the challenge.
 
 Solver is a tool that both supports your challenge development and execution.
 
 These two installations types are covered in the documentation at [Challenges Solver Utility](https://www.katacoda.community/challenges/challenges-solver.html).
 
-The solver CLI utility is targeted for Linux. To use Solver while you are developing your challenge on a Windows or Mac machine one option is to run the utility from the published container for solver. Here is a bash function that you can apply if you decide to use a bash terminal on Windows or Mac:
+## Solver on Windows and MacOS
+
+The solver CLI utility binary is targeted for Linux. To use Solver while you are developing your challenge on Windows or macOS one option is to run the utility from the published container for solver. Here is a bash function that you can apply if you decide to use a bash terminal on Windows or macOS:
 
 ```bash
 function solver() {
-  SOLVER_IMAGE=ghcr.io/javajon/solver:0.4.2   ## <-- Set to the latest semver from https://github.com/javajon/katacoda-solver/releases]
+  SOLVER_IMAGE=ghcr.io/javajon/solver:0.5.4   ## <-- Set to the latest semver release @ https://bit.ly/3sSEiBD
   SCENARIOS_ROOT=~/my-scenarios               ## <-- Set to your base source directory for your challenges and scenarios
   if [[ ! "$(pwd)" =~ ^$SCENARIOS_ROOT.* ]]; then
     echo "Please run this from $SCENARIOS_ROOT or one of its scenario or challenge subdirectory."
     return 1;
   fi
-  SUBDIR=$(echo $(pwd) | grep -oP "^$SCENARIOS_ROOT\K.*")
+  SUBDIR=$(echo $(pwd) | grep -oP "^$SCENARIOS_ROOT\K.*")    ## <-- change to ggrep if on macOS
   docker run --rm -it -v "$SCENARIOS_ROOT":/workdir -w /workdir/$SUBDIR $SOLVER_IMAGE "$@";
 }
 ```
 
-**Note**: The above function expects GNU grep. This is not the version installed by default on macOS. You can easily install the GNU version by using [homebrew](https://brew.sh/) and then just changing the call to `grep` in the above function to `ggrep`.
+### macOS Nuance
+
+The above function expects GNU grep. This is not the version installed by default on macOS. You can easily install the GNU version by using [homebrew](https://brew.sh/) and then just changing the call to `grep` in the above function to `ggrep`.
+
+### Windows Nuance
 
 On Windows, another option is [wsl2](https://docs.microsoft.com/en-us/windows/wsl/about).
 
@@ -152,7 +158,6 @@ To compress the binary before transfer use [UPX](https://upx.github.io/). The re
   ```
   upx --best --lzma $solver
   ````
-
 
 ## Solver Version Tracking
 

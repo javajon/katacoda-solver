@@ -28,28 +28,31 @@ public class SubcommandCreate implements Callable<Integer> {
     private static final Logger LOG = Logger.getLogger(Configuration.class);
     private static final String LINUX_ARCHETYPE = "challenge-linux-solver.zip";
 
-    @Spec
-    CommandSpec spec;
-
     private static final File INDEX = new File("index.json");
     private static final File HINT = new File("hints.sh");
 
-    private enum Archetypes {basic, linux, kubernetes}
+    @Spec
+    CommandSpec spec;
 
     @Option(names = {"-a", "--archetype"}, required = true, defaultValue = "linux", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, description = "The type of challenge to create. Default linux.")
     private Archetypes archetype = Archetypes.kubernetes;
 
-    @Option(names = {"-n", "--name"}, required = false, description = "Optional name of directory for challenge. Default challenge-<archetype>.", defaultValue = "")
+    @Option(names = {"-n", "--name"}, required = false, description = "Optional name of directory for new challenge skaffold files. Default challenge-<archetype>.", defaultValue = "")
     private String name = "";
 
     @Option(names = {"-f", "--force"}, required = false, description = "Force overwrite of existing files with confirmation. Default false.", defaultValue = "false")
     private boolean force = false;
 
-    @Option(names = {"-t", "--target"}, required = false, description = "Target for new challenge. Default current directory. Hidden from users.", defaultValue = ".")
+    @Option(names = {"-t", "--target"}, required = false, description = "Targetted path to directory for new challenge skaffold files. Missing directories will be created. Default current directory.", defaultValue = ".")
     private String target = ".";
 
-    /** The directory where the archetype subdirectory is created. Typically working directory, but unit tests can secretly override. */
+    private enum Archetypes {basic, linux, kubernetes}
+
+    /**
+     * Directory where archetype subdirectory is created. Typically, working directory, but unit tests can override.
+     */
     private Path targetPath = Path.of(target);
+
 
     @Override
     public Integer call() {
@@ -64,7 +67,7 @@ public class SubcommandCreate implements Callable<Integer> {
             return 1;
         }
 
-        if ( name.isEmpty()) {
+        if (name.isEmpty()) {
             name = "challenge-" + archetype.name();
         }
 
@@ -100,7 +103,6 @@ public class SubcommandCreate implements Callable<Integer> {
      * Ensure challenge uses matching version of solver
      * In init-background.sh set the version in SOLVER_VERSION=x.y.z
      *
-     * @param target
      * @param projectDirName
      * @return
      */
